@@ -12,22 +12,15 @@ import PIL
 from PIL import Image, ImageDraw
 import rawpy
 import tifffile
-import scipy
-from scipy.ndimage import shift as shift_array
 
-ROIS = {
-    "center_detail": [.42, .45, .63, .80],
-    "dark_lower_left": [.025, .66, .175, .90],
-    "upper_left": [.02, .05, .12, .22],
-    "right_edge": [.93, .42, .98, .62],
-}
+from raw_common import CONSISTENCY_INDICES, ROIS, roi_slices
 
 LIMITS = [
     "S22 only; no Samsung baseline or S25 measurements.",
     "All alternatives come from the same quartet; independent strategy capture latency is not measured.",
     "Nominal shutter times ISO normalization does not calibrate actual analogue gain across ISO values.",
     "No calibrated scene irradiance, chart, independent noise estimate, SNR or sensor dynamic-range measurement.",
-    "Unaligned and optional global-translation variants have no local-motion deghosting; OIS, flicker, movement and processing may produce disagreement.",
+    "Merges are unaligned: no global-translation or local-motion deghosting; OIS, flicker, movement and processing may produce disagreement.",
     "Half-resolution white-balanced sensor RGB is not a calibrated sRGB color conversion or a Lightroom rendering.",
     "RAW is HAL-delivered data; an unprocessed ADC signal is not established.",
 ]
@@ -69,27 +62,20 @@ def display(rgb, gain=2.0):
     return np.uint8(np.rint(np.clip(x,0,1)*255))
 
 
-def rect(frac, shape):
-    h,w = shape[:2]
-    x0,y0,x1,y1 = frac
-    return slice(int(y0*h),int(y1*h)), slice(int(x0*w),int(x1*w))
-
-
 def stats(a):
     return {"min": float(a.min()), "median": float(np.median(a)),
             "p95": float(np.quantile(a,.95)), "max": float(a.max())}
 
 
 def pair_image(a,b,path,label_a="Middle RAW, bounded settings",label_b="Three-RAW merge",third=None):
-    image = Image.new("RGB",(a.width+b.width+(third.width if third else 0),a.height+38),(24,24,24))
+    image = Image.new("RGB",(a.width+b.width+third.width,a.height+38),(24,24,24))
     image.paste(a,(0,38)); image.paste(b,(a.width,38))
     draw=ImageDraw.Draw(image); draw.text((12,12),label_a,fill="white");draw.text((a.width+12,12),label_b,fill="white")
-    if third:
-        image.paste(third,(a.width+b.width,38));draw.text((a.width+b.width+12,12),"Longer / lower ISO single",fill="white")
+    image.paste(third,(a.width+b.width,38));draw.text((a.width+b.width+12,12),"Longer / lower ISO single",fill="white")
     image.save(path)
 
 
-def run_sequence(source, output, shifts=None):
+def run_sequence(source, output):
     begin=time.perf_counter(); output.mkdir()
     x=[]; results=[]; refs=[]; clipped=[]; near=[]; raw_metadata=[]
     for i in range(4):
@@ -117,25 +103,11 @@ def run_sequence(source, output, shifts=None):
     relative=times*isos/(times[1]*isos[1])
     radiance=[a/float(e) for a,e in zip(x,relative)]
     original_radiance=[a.copy() for a in radiance]
-    original_x=x
-    aligned_rejected=[np.zeros_like(a,dtype=bool) for a in x]
-    if shifts:
-        x=[a.copy() for a in x]
-        for i in [0,2]:
-            dy,dx=shifts["shift_to_middle_raw_pixels_yx"][str(i)]
-            for y in range(2):
-                for z in range(2):
-                    plane=original_x[i][y::2,z::2]
-                    x[i][y::2,z::2]=shift_array(plane,(dy/2,dx/2),order=1,mode="constant",cval=np.nan,prefilter=False)
-                    reject=near[i][y::2,z::2].astype(np.float32)
-                    moved=shift_array(reject,(dy/2,dx/2),order=1,mode="constant",cval=1,prefilter=False)
-                    aligned_rejected[i][y::2,z::2]=moved>0
-        radiance=[a/float(e) for a,e in zip(x,relative)]
     wb=results[1]["android.colorCorrection.gains"]
     gains=np.array([wb["red"],(wb["green_even"]+wb["green_odd"])/2,wb["blue"]],dtype=np.float32)
     # Exposure-weighted average; rolloff protects near-white samples before RGB conversion.
-    weights=[np.where(np.isfinite(a)&~bad,float(e)*np.clip((.98-a)/(.98-.80),0,1),0)
-             for a,e,bad in zip(x[:3],relative[:3],aligned_rejected[:3])]
+    weights=[np.where(np.isfinite(a),float(e)*np.clip((.98-a)/(.98-.80),0,1),0)
+             for a,e in zip(x[:3],relative[:3])]
     sumw=sum(weights)
     fallback=sumw<=0
     numerator=sum(w*np.nan_to_num(a,nan=0) for w,a in zip(weights,radiance))
@@ -157,11 +129,11 @@ def run_sequence(source, output, shifts=None):
     Image.fromarray(mask).save(output/"raw-mask-bits.png")
     midpoint=baseline_rgb[...,1]
     consistency=[]
-    for i in [0,2,3]:
+    for i in CONSISTENCY_INDICES:
         cells=rgb_cells(original_radiance[i],pattern)[...,1]
         # Smooth fixed8x8 cell boxes, select jointly usable channels, not noise statistics.
         b,c=box8(midpoint),box8(cells)
-        max_signal=box8(rgb_cells(original_x[i],pattern)[...,1])
+        max_signal=box8(rgb_cells(x[i],pattern)[...,1])
         valid=(b>.03)&(b<.20)&(max_signal<.75)&(c>0)
         ratios=c[valid]/b[valid]
         residuals={}
@@ -181,7 +153,7 @@ def run_sequence(source, output, shifts=None):
     pair_image(previews[0],previews[1],output/"comparison.png",third=previews[2])
     roi_metrics={}
     for name,frac in ROIS.items():
-        sl=rect(frac,baseline_rgb.shape); raw_sl=rect(frac,baseline.shape)
+        sl=roi_slices(frac,baseline_rgb.shape); raw_sl=roi_slices(frac,baseline.shape)
         a,b,c=baseline_rgb[sl],merge_rgb[sl],long_rgb[sl]
         a_img,b_img=Image.fromarray(display(a)),Image.fromarray(display(b))
         # Explicit shadow lift, fixed gain16 to BOTH; no per-image normalization.
@@ -211,9 +183,8 @@ def run_sequence(source, output, shifts=None):
              "all_frames_near_white_fallback_fraction":float(fallback.mean()),
              "middle_near_white_short_usable_fraction":float((near[1]&~near[0]).mean()),
              "middle_clipped_short_usable_sample_count":int((clipped[1]&~near[0]).sum()),
-             "aligned_middle_clipped_short_usable_sample_count":int((clipped[1]&(weights[0]>0)).sum()),
-             "alignment":shifts or {"method":"none"},
-             "alignment_rejected_fraction": [float(a.mean()) for a in aligned_rejected],
+             "weighted_middle_clipped_short_usable_sample_count":int((clipped[1]&(weights[0]>0)).sum()),
+             "alignment":{"method":"none"},
              "mean_merge_weight_fractions": [float(a.mean()) for a in fractions],
              "radiometric_consistency":consistency,"roi_metrics":roi_metrics,
              "white_balance_rgb_gains":gains.tolist(),"focus_diopters":[r["android.lens.focusDistance"] for r in results],
@@ -224,16 +195,13 @@ def run_sequence(source, output, shifts=None):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--source",required=True,type=Path);p.add_argument("--output",required=True,type=Path)
-    p.add_argument("--shifts-json",type=Path,help="Optional independently estimated signed shift-to-middle y,x raw pixels")
     args=p.parse_args();args.output.mkdir(parents=True,exist_ok=False)
     start=time.perf_counter()
-    shifts=json.loads(args.shifts_json.read_text()) if args.shifts_json else None
-    metrics=[run_sequence(d,args.output/d.name,shifts["runs"][d.name] if shifts else None) for d in sorted(args.source.glob("control-*")) if d.is_dir()]
+    metrics=[run_sequence(d,args.output/d.name) for d in sorted(args.source.glob("control-*")) if d.is_dir()]
     assert len(metrics)==3
-    summary={"software":{"python":platform.python_version(),"numpy":np.__version__,"rawpy":rawpy.__version__,"LibRaw":rawpy.libraw_version,"Pillow":PIL.__version__,"tifffile":tifffile.__version__,"scipy":scipy.__version__},
-             "source_script_sha256":sha(Path(__file__)),"method":"Native CFA exposure-weighted radiance with near-white rolloff; " + ("global translation per CFA plane" if shifts else "no alignment"),
+    summary={"software":{"python":platform.python_version(),"numpy":np.__version__,"rawpy":rawpy.__version__,"LibRaw":rawpy.libraw_version,"Pillow":PIL.__version__,"tifffile":tifffile.__version__},
+             "source_script_sha256":sha(Path(__file__)),"method":"Native CFA exposure-weighted radiance with near-white rolloff; no alignment",
              "method_parameters":{"near_white_signal":.98,"rolloff_start_signal":.80,"default_display_gain":2,"shadow_display_gain":16,"same_bayer_cell_green":"mean of two greens"},
-             "alignment_input": {"path":str(args.shifts_json),"sha256":sha(args.shifts_json),"parameters":shifts} if shifts else None,
              "raw_mask_bits":{"1":"middle at raw white level","2":"all frames at or above .98 signal; shortest fallback","4":"middle >=.98 and shortest <.98"},
              "limits":LIMITS,"elapsed_seconds":time.perf_counter()-start,"runs":metrics}
     (args.output/"summary.json").write_text(json.dumps(summary,indent=2)+"\n")

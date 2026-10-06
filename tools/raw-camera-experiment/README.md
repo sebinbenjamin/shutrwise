@@ -45,7 +45,15 @@ The batch is device-agnostic: the capability map, listed camera IDs, sensor Baye
 
 The existing installed APK is verified against `probe/build/probe.apk`, which is a local ignored build artifact. On a fresh checkout, build with `python3 tools/raw-camera-experiment/probe/build.py` using the SDK/JDK setup in [development-phone.md](../../docs/development-phone.md). Install the intended APK before capture. The batch deliberately refuses a different installed build.
 
-Capture source is copied unchanged from `prototype/long-single-control`, commit `70fef8daabf4f3bac4dbe0c4c7b5a9b6e5f4af07`. Analysis and separately authored verifier code are copied from the archived lighting-pair experiment. That comparison uses geometric crop names and checks the shortest-source fallback when all near-white merge weights vanish. Original source references are in [the lighting-pair report](../../docs/research/lighting-pair-20261006.md).
+The Android capture source is copied unchanged from `prototype/long-single-control`, commit `70fef8daabf4f3bac4dbe0c4c7b5a9b6e5f4af07`. The host-side Python (device selection, batch orchestration) is maintained here and shares ADB device selection with the other device tools through `tools/adb_select.py`.
+
+Analysis code originates from the archived lighting-pair experiment, consolidated as follows after the 2026-10-06 review:
+
+- Shared RAW-plane helpers live in `analysis/raw_common.py`: one geometric ROI table, one rounding-consistent ROI slicer, quartile stats, Bayer-pattern-aware green extraction, and the phase-only shift diagnostic. The old `source_audit.py` helper module was removed; its archived original remains on the `research/*` branches.
+- ROI keys are geometric everywhere (`center_detail`, `dark_lower_left`, `upper_left`, `right_edge`). The archived scene names mapped to the same coordinates: `towel` → `center_detail`, `bright_wall` → `upper_left`, `right_metal` → `right_edge`. The `normal` lighting evidence predates this rename and still carries the scene names.
+- ROI pixel bounds use `round()` in every script. `compare.py` previously truncated with `int()`, so its ROI edges could differ by one pixel from the reported bounds; unified metrics may differ from the `normal` evidence within that one-pixel edge.
+- The unused `--shifts-json` global-translation path was removed from `compare.py` along with its scipy dependency. This pipeline never aligns frames; the metrics key `alignment` is now the constant `{"method": "none"}`, `alignment_rejected_fraction` is gone, and `aligned_middle_clipped_short_usable_sample_count` is renamed to `weighted_middle_clipped_short_usable_sample_count` (it was always weight-based, never alignment-based).
+- `verify_long_control.py` deliberately shares no helpers with the pipeline it verifies.
 
 ## Interpretation
 

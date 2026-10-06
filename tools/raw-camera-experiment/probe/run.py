@@ -6,8 +6,14 @@ import io
 import json
 from pathlib import Path
 import subprocess
+import sys
 import tarfile
 import time
+
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from adb_select import DeviceSelectionError, select_serial  # noqa: E402
 
 PACKAGE = 'dev.shutrwise.probe'
 
@@ -25,16 +31,10 @@ def main():
     if args.output.exists():
         parser.error('Output exists; choose a new evidence directory.')
     args.output.mkdir(parents=True)
-    devices = subprocess.run([str(args.adb), 'devices'], check=True, capture_output=True, text=True).stdout
-    online = [s.split()[0] for s in devices.splitlines() if len(s.split()) >= 2 and s.split()[1] == 'device']
-    if args.device:
-        if args.device not in online:
-            parser.error('Requested phone is not connected and authorized.')
-        serial = args.device
-    elif len(online) == 1:
-        serial = online[0]
-    else:
-        parser.error('Need one authorized phone, or select with --device.')
+    try:
+        serial = select_serial(args.adb, args.device)
+    except DeviceSelectionError as error:
+        parser.error(str(error))
     adb = [str(args.adb), '-s', serial]
     apk_path = Path(__file__).parent / 'build/probe.apk'
     apk_hash = hashlib.sha256(apk_path.read_bytes()).hexdigest() if apk_path.exists() else None

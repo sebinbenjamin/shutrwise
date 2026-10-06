@@ -17,7 +17,7 @@ ORIGINAL_SHA256 = "41a5b434ae09a33325c8fe3b6e93cf3d49681c44d34eca7a20ab6fb47f3cd
 PATCHED_SHA256 = "737b00565fc94fe9c1f2a5de8122b77378c21382b0f17fa4272216ff6c5da548"
 
 
-def digest(data):
+def sha256_bytes(data):
     return hashlib.sha256(data).hexdigest()
 
 
@@ -49,12 +49,12 @@ def main():
     original = 'defaults.streamMode ?? "scrcpy"'
     replacement = '(isEmulatorSerial(serial) ? defaults.streamMode ?? "scrcpy" : "scrcpy")'
     source = target.read_bytes()
-    source_hash = digest(source)
+    source_hash = sha256_bytes(source)
     if args.restore:
         if not backup.exists():
             raise SystemExit("No saved original to restore.")
         saved = backup.read_bytes()
-        if digest(saved) != ORIGINAL_SHA256:
+        if sha256_bytes(saved) != ORIGINAL_SHA256:
             raise SystemExit("Original backup changed; refusing to restore it.")
         if source_hash not in (ORIGINAL_SHA256, PATCHED_SHA256):
             raise SystemExit("Installed file changed; refusing to overwrite it.")
@@ -63,17 +63,17 @@ def main():
         print("Restored original middleware.")
         return
     if source_hash == PATCHED_SHA256:
-        if not backup.exists() or digest(backup.read_bytes()) != ORIGINAL_SHA256:
+        if not backup.exists() or sha256_bytes(backup.read_bytes()) != ORIGINAL_SHA256:
             raise SystemExit("Patched file has no verified original backup; inspect before continuing.")
         print("Compatibility patch already applied.")
         return
     if source_hash != ORIGINAL_SHA256:
         raise SystemExit("Unexpected router source; refusing to patch it.")
     patched = source.replace(original.encode(), replacement.encode())
-    if digest(patched) != PATCHED_SHA256:
+    if sha256_bytes(patched) != PATCHED_SHA256:
         raise SystemExit("Unexpected patch result; refusing to write it.")
     if backup.exists():
-        if digest(backup.read_bytes()) != ORIGINAL_SHA256:
+        if sha256_bytes(backup.read_bytes()) != ORIGINAL_SHA256:
             raise SystemExit("Original backup changed; refusing to overwrite it.")
     else:
         with backup.open("xb") as output:
@@ -81,7 +81,7 @@ def main():
             output.flush()
             os.fsync(output.fileno())
     replace_file(target, patched)
-    print(json.dumps({"packageVersion": metadata["version"], "originalSha256": source_hash, "patchedSha256": digest(patched), "backup": str(backup)}, indent=2))
+    print(json.dumps({"packageVersion": metadata["version"], "originalSha256": source_hash, "patchedSha256": sha256_bytes(patched), "backup": str(backup)}, indent=2))
 
 
 if __name__ == "__main__":

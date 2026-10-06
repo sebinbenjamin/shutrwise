@@ -10,6 +10,8 @@ import shutil
 import subprocess
 import sys
 
+from adb_select import DeviceSelectionError, select_serial
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -32,21 +34,10 @@ def main():
         )
         return result.stdout.strip()
 
-    online = []
-    for line in run("devices").splitlines():
-        fields = line.split()
-        if len(fields) >= 2 and fields[1] == "device":
-            online.append(fields[0])
-    if args.device:
-        if args.device not in online:
-            parser.error("The requested device is not connected and authorized.")
-        serial = args.device
-    elif len(online) == 1:
-        serial = online[0]
-    elif not online:
-        parser.error("No authorized phone is visible to this ADB server.")
-    else:
-        parser.error("Several phones are connected. Select one with --device.")
+    try:
+        serial = select_serial(adb, args.device)
+    except DeviceSelectionError as error:
+        parser.error(str(error))
 
     def shell(*command):
         return run("-s", serial, "shell", *command)

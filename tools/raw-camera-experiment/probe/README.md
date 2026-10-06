@@ -3,8 +3,8 @@
 This branch adds `--mode control`: one four-request burst with fixed focus/AWB.
 Frames0–2 use fixed-ISO -2/0/+2 EV; frame3 uses the clamped +2 EV shutter and
 inversely reduced, rounded/clamped ISO. Plans log role, clamps and nominal
-shutter-times-ISO product; actual results determine analysis. See
-`comparison/README.md` for the current-scene control experiment.
+shutter-times-ISO product; actual results determine analysis. The all-camera
+[batch README](../README.md) drives this probe and its analysis.
 
 Question: can the connected Samsung phone expose RAW/manual controls, write an independently decodable DNG, and save three distinct exposures through Camera2?
 

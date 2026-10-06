@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Independent numerical/master/render verification; no scene-quality scores."""
+# Deliberately self-contained: an independent check must not share helpers
+# with the analysis pipeline it verifies.
 import argparse,hashlib,json
 from pathlib import Path
 import numpy as np

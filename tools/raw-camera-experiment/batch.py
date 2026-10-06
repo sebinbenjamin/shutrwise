@@ -10,13 +10,21 @@ import subprocess
 import sys
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+from adb_select import DeviceSelectionError, select_serial  # noqa: E402
+
 PACKAGE = 'dev.shutrwise.probe'
+# A control quartet is frames 0-2 (fixed-ISO bracket) plus frame 3 (longer,
+# lower-ISO single); the Java probe is the behavioural source of truth.
+CONTROL_RUNS_PER_CAMERA = 3
+FRAMES_PER_CONTROL_RUN = 4
+PHYSICAL_CHECK_FRAMES = 1
 
 def save(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n')
 
-def digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def sha256_file(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 def run(command, log, serial=None):
     result = subprocess.run([str(v) for v in command], stdout=subprocess.PIPE,
@@ -44,11 +52,10 @@ def main():
     if args.stage == 'capture':
         if folder.exists():
             parser.error('Lighting output already exists. Originals are never overwritten; choose a new root.')
-        devices = subprocess.check_output([args.adb, 'devices'], text=True)
-        online = [line.split()[0] for line in devices.splitlines() if len(line.split())>=2 and line.split()[1]=='device']
-        serial = args.device or (online[0] if len(online)==1 else None)
-        if serial not in online:
-            parser.error('Select one connected, authorized phone with --device.')
+        try:
+            serial = select_serial(args.adb, args.device)
+        except DeviceSelectionError as error:
+            parser.error(str(error))
         adb = [args.adb, '-s', serial]
         apk = HERE/'probe/build/probe.apk'
         if not apk.exists():
@@ -57,14 +64,14 @@ def main():
         if not location.startswith('package:') or '\n' in location:
             parser.error('Install this probe APK first; one package APK is required.')
         installed = subprocess.check_output(adb+['shell','sha256sum',location.removeprefix('package:')], text=True).split()[0]
-        if installed != digest(apk):
+        if installed != sha256_file(apk):
             parser.error('Installed APK differs from local probe/build/probe.apk. Install the intended build first.')
         folder.mkdir(parents=True)
         save(folder/'conditions.json', {'recorded_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
              'lighting_label': args.lighting, 'setup': 'Owner requested fixed-phone lighting comparison; no lux or flicker measurement.',
              'protocol': 'Three control quartets per directly listed RAW+MANUAL_SENSOR camera; physical IDs attempted once in single mode.',
              'caveat': 'Different focal lengths and front cameras see different fields of view. Front IDs may be overlapping paths, not distinct sensors.',
-             'probe_apk_sha256': installed, 'capture_runner_sha256': digest(HERE/'probe/run.py')})
+             'probe_apk_sha256': installed, 'capture_runner_sha256': sha256_file(HERE/'probe/run.py')})
         common = [sys.executable, HERE/'probe/run.py', '--adb',args.adb,'--device',serial,'--skip-install']
         run(common+['--action','capabilities','--output',folder/'capabilities'],folder/'capabilities.log',serial)
         capabilities = json.loads((folder/'capabilities/capabilities.json').read_text())
@@ -85,13 +92,13 @@ def main():
                 record['status']='skipped_missing_raw_or_manual_sensor';return
             base = folder/('physical-'+camera_id if physical else 'camera-'+camera_id)
             print('Capturing',base.name,flush=True)
-            for index in range(1,2 if physical else 4):
+            for index in range(1, (PHYSICAL_CHECK_FRAMES if physical else CONTROL_RUNS_PER_CAMERA) + 1):
                 name='single-access-check' if physical else f'control-{index:02d}'
                 destination=base/'captures'/name
                 try:
                     run(common+['--action','capture','--camera-id',camera_id,'--mode','single' if physical else 'control','--output',destination],base/(name+'.log'),serial)
                     capture=json.loads((destination/'run.json').read_text())
-                    expected=1 if physical else 4
+                    expected=PHYSICAL_CHECK_FRAMES if physical else FRAMES_PER_CONTROL_RUN
                     if capture['state']!='FINISHED' or len(list(destination.glob('frame-*.dng')))!=expected:
                         raise RuntimeError('Missing finished capture or expected DNG files')
                     record['runs'].append({'name':name,'state':'saved','dngs':expected})
@@ -131,7 +138,7 @@ def main():
                 record['status']='analysis_failed';record['error']=str(error);errors.append(c['camera_id'])
                 print(base.name,record['error'],flush=True)
             save(folder/'analysis-status.json',{'cameras':records})
-    files=[{'path':str(p.relative_to(folder)),'bytes':p.stat().st_size,'sha256':digest(p)} for p in sorted(folder.rglob('*')) if p.is_file() and p.name!='manifest.json']
+    files=[{'path':str(p.relative_to(folder)),'bytes':p.stat().st_size,'sha256':sha256_file(p)} for p in sorted(folder.rglob('*')) if p.is_file() and p.name!='manifest.json']
     save(folder/'manifest.json',{'files':files})
     print(args.stage,'complete for',args.lighting,'; failures:',errors,flush=True)
     return 1 if errors else 0
