@@ -1,0 +1,1 @@
+First unaligned processing pass retained for provenance. Its source script hash predates the final archived prototype. Use sibling merge/ and merge-aligned/ for canonical comparisons; both were run with archived comparison/compare.py.

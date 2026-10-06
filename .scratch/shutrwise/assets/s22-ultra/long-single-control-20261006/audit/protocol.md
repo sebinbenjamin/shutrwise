@@ -1,0 +1,23 @@
+# Independent longer/lower-ISO control audit protocol
+
+Written before viewing processing outputs for this new experiment, 2026-10-06. Earlier datasets are excluded from brightness comparisons. Fresh scene conditions have not been independently reconfirmed; changing light remains a caveat.
+
+Each quartet must retain four separate original DNGs and actual Camera2 results: frame0 short/highISO; frame1 AE middle/highISO; frame2 long/highISO; frame3 same long shutter/lowerISO. Compare each candidate only to controls from its own quartet. Same-shutter frame2/frame3 diagnoses ISO/gain behavior; frame1/frame3 changes shutter and ISO jointly. A long exposure does not establish photon count from codes alone.
+
+Reject eligibility as the intended control if actual exposure/ISO fail to execute the intended plan, timestamps cannot be associated with unique DNGs/results, settings differ unexpectedly, dimensions/CFA mismatch, or output source provenance is ambiguous. Preserve failures and describe the actual control achieved rather than deleting or silently retaking to favor a result. Inspect actual shutter and sensitivity, dynamic black/white values, DNG tags, focus, white balance and OIS for all four frames. Native sequence settings can be nominally locked while illumination/geometry remain variable.
+
+Primary comparisons preserve raw black-subtracted normalized code values and use identical white balance/Bayer-cell RGB/display parameters for middle, lowerISO single and frame0–2 merge. Do not normalize candidate brightness to force a match. Check a separate actual shutter×ISO model against measured per-CFA gated ratios, retaining disagreement. ISO metadata alone does not validate linear signal gain, photon collection, saturation or equal scene brightness. Higher-ISO long and lower-ISO long should be compared at the same reported shutter, with expected nominal code ratio dictated by actual ISO only; report departures.
+
+Use preselected previous-view fractional rectangles only if the fresh middle-frame view is comparable: towel(.42,.45,.63,.80), dark lower-left(.025,.66,.175,.90), bright-wall(.02,.05,.12,.22), right strip(.93,.42,.98,.62). Before pixel statistics, inspect one fresh baseline image and record whether these remain applicable. If the view changed, fix new semantically motivated rectangles before measurements. Whole-mosaic clipping is reported separately; selected rectangles need not contain clipped samples and must not be moved to favor recovery.
+
+Report per-CFA source code percentiles and saturation fractions (black/white read separately per file), unsaturated exposure support, fixed-region relative brightness under identical rendering and alignment concerns. Use the existing one-raw-pixel phase-displacement caution for unregistered mosaics and >5% gated-median radiometric departure as a descriptive consistency flag. These flags are engineering diagnostics, not calibrated statistical tests. Texture/grain comparisons remain qualitative; no scene spatial variance is called temporal noise or SNR. No measured sensor DR or universal optimal-capture claim.
+
+Compare independent source/storage and actual summed sensor-integration budgets: frame1 versus frame3 versus frames0–2. Nominally ~20ms/~80ms/~105ms. Sensor integration sum is not user shutter latency. Candidate one file versus three bracket originals, plus processing/storage costs, can inform the practical trade-off.
+
+Verify pipeline floats and saturation-weight rejection directly from immutable source files. Any aligned rendering is secondary: interpolation smooths grain and can change detail, so it cannot establish sensor-quality improvements by itself. Source DNG hashes must remain unchanged. Camera/Samsung/S25 claims are excluded.
+
+Primary API for raw image arrays, CFA indexes and per-file black/white interpretation: https://letmaik.github.io/rawpy/api/rawpy.RawPy.html .
+
+## Fresh view confirmation before pixel statistics
+
+An independent rawpy middle-frame preview from fresh `control-01/frame-1.dng` was viewed before the audit's numerical source measurements or processing renders. Camera view is broadly comparable, although framing/objects are not identical to the historical capture. The fixed rectangles still select towel texture, dark lower-left, bright upper-left wall and dark right strip, so their original fractional coordinates are retained. This permits within-quartet ROI comparisons; it does not make historical captures comparable. The capture/merge agent's newly source-selected brightest clipped tile is exploratory and separate from these four preselected ROIs.
