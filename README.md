@@ -9,7 +9,7 @@ The current goal is to choose a product direction and its core experience using 
 - Help the beginner get the shot, with deeper learning available on demand.
 - Use deliberate capture as the working default, with quick capture optional. Extra time or extra frames must provide a useful benefit.
 - Give brief feedback before and during capture, with a deeper explanation afterward when wanted.
-- Start with the camera choosing and showing a capture plan. Priorities, technical adjustments and explanations remain available when wanted. The owner selected this starting interaction; detailed controls and output workflow remain open.
+- Start with the camera choosing and showing a capture plan. Priorities, technical adjustments and explanations remain available when wanted. The owner agreed to immediate shutter execution, optional plain-language priorities, and cancellation that preserves completed RAWs. Measured waiting time and the default output workflow remain open.
 - Compare capture improvements and clearer decision-making separately. Keep both immediate-photo and later-RAW-editing workflows open.
 - Keep scene coverage open. New Zealand scenery is an initial interest, and people, selfies and other subjects remain relevant. Include handheld and tripod use.
 
@@ -28,6 +28,7 @@ These are exploration inputs. The model, camera framework, capture algorithm, fi
 | [Longer single versus a bracket](docs/research/long-single-control-20261006.md) | Fresh paired captures testing a stronger single-RAW baseline |
 | [S25 Ultra evidence](.scratch/shutrwise/assets/device-evidence-record.md) | Owner-reported target-phone inventory and outstanding measurements |
 | [All listed RAW cameras, normal and dark](docs/research/all-camera-lighting-20261006.md) | Per-camera control quartets under two lightings; layouts, shutter limits and black-level calibration |
+| [Samsung versus custom RAW](docs/research/samsung-baseline-20261007.md) | Three fresh S22 repeats; linear Pro DNG versus Bayer sources, matched displays and exposure/processing limits |
 | [Comparison method](.scratch/shutrwise/assets/initial-capture-comparison.md) | Baselines, conditions, sources of value and continuation criteria |
 | [Device evidence checklist](.scratch/shutrwise/assets/device-evidence-checklist.md) | Required capability records and comparison captures |
 | [Android capture research](docs/research/android-capture-controls.md) | Camera API facts and device-dependent unknowns |
@@ -42,7 +43,7 @@ The S25 Ultra remains the target device. Its reported versions are Android 16, O
 
 T3 now discovers the physical S22 and has opened it in this thread's Device panel. Native screen capture returns the probe app's screen. The host tooling and a reversible Device hub 0.12.0 compatibility patch fix the earlier discovery/streaming failures; a fresh hub session also passes. See the [fix report](docs/research/t3-device-panel-fix-20261006.md) and [connection guide](docs/development-phone.md).
 
-The delegated data experiments compared brackets with their metered middle RAW and then captured twelve fresh sources to test a longer, lower-ISO single. That stronger single looks less grainy than the metered baseline while keeping similar brightness and clipping. The merge appears quieter still and retains a short highlight source, at three times the RAW storage and 31.25% more summed integration than the longer single. Registration and scene limits remain; quantified SNR/dynamic range, photographer preference, Samsung comparisons and S25 behavior are unmeasured.
+The delegated data experiments compared brackets with their metered middle RAW and then captured twelve fresh sources to test a longer, lower-ISO single. That stronger single looks less grainy than the metered baseline while keeping similar brightness and clipping. The merge appears quieter still and retains a short highlight source, at three times the RAW storage and 31.25% more summed integration than the longer single. Registration and scene limits remain; quantified SNR/dynamic range, photographer preference and S25 behavior are unmeasured. A later [Samsung comparison](docs/research/samsung-baseline-20261007.md) completed three repeats: Pro DNG shadows look quieter in the inspected views, but exposure and processing differences prevent a calibrated ranking or a claim of custom superiority.
 
 ## Repository conventions
 

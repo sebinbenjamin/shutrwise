@@ -1,0 +1,1066 @@
+{
+  "version": 1,
+  "experiment": "custom",
+  "device": "S22 Ultra SM-S908E",
+  "source_root": ".scratch/shutrwise/assets/s22-ultra/samsung-baseline-20261007/custom",
+  "backup": "Large originals and derived files remain local and are covered by owner-managed VM backups.",
+  "conditions": {
+    "normal": {
+      "setup": {
+        "recorded_at_utc": "2026-10-06T22:13:28.074202+00:00",
+        "lighting_label": "normal",
+        "setup": "Owner requested fixed-phone lighting comparison; no lux or flicker measurement.",
+        "protocol": "Three control quartets per directly listed RAW+MANUAL_SENSOR camera; physical IDs attempted once in single mode.",
+        "caveat": "Different focal lengths and front cameras see different fields of view. Front IDs may be overlapping paths, not distinct sensors.",
+        "probe_apk_sha256": "df3d5db7281da99e4f6a9640f4e36a5fa32e219c5345183e15a4ef41e738a086",
+        "capture_runner_sha256": "03ce594ced17b3e4d3becff26b03cc97d82f6115705d555430b807f43e25c31d"
+      },
+      "cameras": [
+        {
+          "camera_id": "0",
+          "directly_listed": true,
+          "lens_facing": 1,
+          "focal_lengths_mm": [
+            6.4
+          ],
+          "status": "captured",
+          "runs": [
+            {
+              "name": "control-01",
+              "state": "FINISHED",
+              "raw_size": {
+                "width": 4000,
+                "height": 3000
+              },
+              "auto_shutter_ns": 39965296,
+              "auto_iso": 12150,
+              "plan": [
+                {
+                  "index": 0,
+                  "offset_ev": -2,
+                  "frame_role": "fixed_iso_exposure",
+                  "requested_exposure_time_ns": 9991324,
+                  "unclamped_exposure_time_ns": 9991324,
+                  "requested_iso": 3200,
+                  "unclamped_iso": 3200,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 31972236800,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 0.25,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 33333333,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.53763443,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": false
+                },
+                {
+                  "index": 1,
+                  "offset_ev": 0,
+                  "frame_role": "metered_middle_raw",
+                  "requested_exposure_time_ns": 39965296,
+                  "unclamped_exposure_time_ns": 39965296,
+                  "requested_iso": 3200,
+                  "unclamped_iso": 3200,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 127888947200,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 1,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 39965296,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.53763443,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": false
+                },
+                {
+                  "index": 2,
+                  "offset_ev": 2,
+                  "frame_role": "fixed_iso_exposure",
+                  "requested_exposure_time_ns": 103388880,
+                  "unclamped_exposure_time_ns": 159861184,
+                  "requested_iso": 3200,
+                  "unclamped_iso": 3200,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 330844416000,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 2.5869664520938365,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 103388880,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.53763443,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": true
+                },
+                {
+                  "index": 3,
+                  "offset_ev": 0,
+                  "frame_role": "longer_lower_iso_single",
+                  "requested_exposure_time_ns": 103388880,
+                  "unclamped_exposure_time_ns": 159861184,
+                  "requested_iso": 1237,
+                  "unclamped_iso": 1237,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 127892044560,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 1.0000242191375237,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 103388880,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.53763443,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": true
+                }
+              ],
+              "frames": [
+                {
+                  "frame": 0,
+                  "sha256": "e0006b6f9a8082661c1e7daa89987655595b79eef913f710197c78de12848046",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 9991324,
+                  "actual_iso": 3196,
+                  "white_clip_pct": 0.0005833333333333333,
+                  "timestamps_match": true
+                },
+                {
+                  "frame": 1,
+                  "sha256": "aad72b81edb6019b455ea50dffd713797ee174be60686d837036ad71c5674abc",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 39965296,
+                  "actual_iso": 3196,
+                  "white_clip_pct": 0.015208333333333334,
+                  "timestamps_match": true
+                },
+                {
+                  "frame": 2,
+                  "sha256": "95255e4911cd866db36c39f537b9fe64372f6bb07eac230cc2b3e8f09303a6e9",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 103388880,
+                  "actual_iso": 3196,
+                  "white_clip_pct": 0.04115833333333334,
+                  "timestamps_match": true
+                },
+                {
+                  "frame": 3,
+                  "sha256": "b1005e7a60e57a05c77617572f95e22978dab5cb21907993d71ef407cd8e3999",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 103388880,
+                  "actual_iso": 1235,
+                  "white_clip_pct": 0.01455,
+                  "timestamps_match": true
+                }
+              ],
+              "controls": {
+                "same_long_shutter_2_3": true,
+                "bracket_iso_constant": true,
+                "focus_constant": true,
+                "awb_locked_all": true,
+                "wb_constant": true,
+                "unique_timestamps": true,
+                "unique_frame_numbers": true,
+                "all_timestamp_matches": true,
+                "all_tiff_exposure_matches": true,
+                "all_tiff_iso_matches": true,
+                "all_actual_shutter_equals_requested": true,
+                "same_shape_cfa": true
+              },
+              "verification": {
+                "source_sha256": [
+                  "e0006b6f9a8082661c1e7daa89987655595b79eef913f710197c78de12848046",
+                  "aad72b81edb6019b455ea50dffd713797ee174be60686d837036ad71c5674abc",
+                  "95255e4911cd866db36c39f537b9fe64372f6bb07eac230cc2b3e8f09303a6e9",
+                  "b1005e7a60e57a05c77617572f95e22978dab5cb21907993d71ef407cd8e3999"
+                ],
+                "pipeline_formula_checks": {
+                  "single": {
+                    "all_master_finite": true,
+                    "master_max_abs_formula_error": 0.0,
+                    "rgb_max_abs_formula_error": 0.0,
+                    "preview_exact_same_transform": true
+                  },
+                  "long-single": {
+                    "all_master_finite": true,
+                    "master_max_abs_formula_error": 4.780564610840088e-08,
+                    "rgb_max_abs_formula_error": 0.0,
+                    "preview_exact_same_transform": true
+                  },
+                  "merge": {
+                    "all_master_finite": true,
+                    "master_max_abs_formula_error": 1.1912083186516043e-07,
+                    "rgb_max_abs_formula_error": 0.0,
+                    "preview_exact_same_transform": true
+                  }
+                },
+                "rejected_saturated_positive_weight_count": [
+                  0,
+                  0,
+                  0
+                ],
+                "all_zero_weights_count": 84,
+                "relative_product_to_middle": [
+                  0.25,
+                  1.0,
+                  2.5869664520938365,
+                  0.9996569362753092
+                ],
+                "all_zero_weights_handling": "Shortest-source fallback checked by full formula reconstruction; these pixels cannot recover highlights clipped in every source."
+              },
+              "color_description": "RGBG",
+              "cfa_label": "GRBG",
+              "analysis_script_sha256": "da3b2bab5f6da16a00ee7086aaf4cbb3b923f9959beb45b23e483518d5f2649f"
+            },
+            {
+              "name": "control-02",
+              "state": "FINISHED",
+              "raw_size": {
+                "width": 4000,
+                "height": 3000
+              },
+              "auto_shutter_ns": 39965296,
+              "auto_iso": 12150,
+              "plan": [
+                {
+                  "index": 0,
+                  "offset_ev": -2,
+                  "frame_role": "fixed_iso_exposure",
+                  "requested_exposure_time_ns": 9991324,
+                  "unclamped_exposure_time_ns": 9991324,
+                  "requested_iso": 3200,
+                  "unclamped_iso": 3200,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 31972236800,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 0.25,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 33333333,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.57471263,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": false
+                },
+                {
+                  "index": 1,
+                  "offset_ev": 0,
+                  "frame_role": "metered_middle_raw",
+                  "requested_exposure_time_ns": 39965296,
+                  "unclamped_exposure_time_ns": 39965296,
+                  "requested_iso": 3200,
+                  "unclamped_iso": 3200,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 127888947200,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 1,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 39965296,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.57471263,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": false
+                },
+                {
+                  "index": 2,
+                  "offset_ev": 2,
+                  "frame_role": "fixed_iso_exposure",
+                  "requested_exposure_time_ns": 103388880,
+                  "unclamped_exposure_time_ns": 159861184,
+                  "requested_iso": 3200,
+                  "unclamped_iso": 3200,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 330844416000,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 2.5869664520938365,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 103388880,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.57471263,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": true
+                },
+                {
+                  "index": 3,
+                  "offset_ev": 0,
+                  "frame_role": "longer_lower_iso_single",
+                  "requested_exposure_time_ns": 103388880,
+                  "unclamped_exposure_time_ns": 159861184,
+                  "requested_iso": 1237,
+                  "unclamped_iso": 1237,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 127892044560,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 1.0000242191375237,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 103388880,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.57471263,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": true
+                }
+              ],
+              "frames": [
+                {
+                  "frame": 0,
+                  "sha256": "2dd3835d2f4fa704b4b1e8d594c59d660876a33781b06a28fe1d280c9a92cd61",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 9991324,
+                  "actual_iso": 3196,
+                  "white_clip_pct": 0.0005583333333333333,
+                  "timestamps_match": true
+                },
+                {
+                  "frame": 1,
+                  "sha256": "db49aaee2c138be3fed3b056b824ad5b3d2bc98af6feb90d8b71ae4f67b621dd",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 39965296,
+                  "actual_iso": 3196,
+                  "white_clip_pct": 0.014933333333333331,
+                  "timestamps_match": true
+                },
+                {
+                  "frame": 2,
+                  "sha256": "fd5fc02f4c61e4404d2aeafa77be2937b8c8d4df8d7af7fdd43faf1a0d06be41",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 103388880,
+                  "actual_iso": 3196,
+                  "white_clip_pct": 0.04131666666666667,
+                  "timestamps_match": true
+                },
+                {
+                  "frame": 3,
+                  "sha256": "18c48f4284221ca9dd73ea5e0ffb5a9154b0830e57f923a5e3ab9e79ffd21d60",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 103388880,
+                  "actual_iso": 1235,
+                  "white_clip_pct": 0.014408333333333334,
+                  "timestamps_match": true
+                }
+              ],
+              "controls": {
+                "same_long_shutter_2_3": true,
+                "bracket_iso_constant": true,
+                "focus_constant": true,
+                "awb_locked_all": true,
+                "wb_constant": true,
+                "unique_timestamps": true,
+                "unique_frame_numbers": true,
+                "all_timestamp_matches": true,
+                "all_tiff_exposure_matches": true,
+                "all_tiff_iso_matches": true,
+                "all_actual_shutter_equals_requested": true,
+                "same_shape_cfa": true
+              },
+              "verification": {
+                "source_sha256": [
+                  "2dd3835d2f4fa704b4b1e8d594c59d660876a33781b06a28fe1d280c9a92cd61",
+                  "db49aaee2c138be3fed3b056b824ad5b3d2bc98af6feb90d8b71ae4f67b621dd",
+                  "fd5fc02f4c61e4404d2aeafa77be2937b8c8d4df8d7af7fdd43faf1a0d06be41",
+                  "18c48f4284221ca9dd73ea5e0ffb5a9154b0830e57f923a5e3ab9e79ffd21d60"
+                ],
+                "pipeline_formula_checks": {
+                  "single": {
+                    "all_master_finite": true,
+                    "master_max_abs_formula_error": 0.0,
+                    "rgb_max_abs_formula_error": 0.0,
+                    "preview_exact_same_transform": true
+                  },
+                  "long-single": {
+                    "all_master_finite": true,
+                    "master_max_abs_formula_error": 4.780564610840088e-08,
+                    "rgb_max_abs_formula_error": 0.0,
+                    "preview_exact_same_transform": true
+                  },
+                  "merge": {
+                    "all_master_finite": true,
+                    "master_max_abs_formula_error": 1.1819902789866887e-07,
+                    "rgb_max_abs_formula_error": 0.0,
+                    "preview_exact_same_transform": true
+                  }
+                },
+                "rejected_saturated_positive_weight_count": [
+                  0,
+                  0,
+                  0
+                ],
+                "all_zero_weights_count": 81,
+                "relative_product_to_middle": [
+                  0.25,
+                  1.0,
+                  2.5869664520938365,
+                  0.9996569362753092
+                ],
+                "all_zero_weights_handling": "Shortest-source fallback checked by full formula reconstruction; these pixels cannot recover highlights clipped in every source."
+              },
+              "color_description": "RGBG",
+              "cfa_label": "GRBG",
+              "analysis_script_sha256": "da3b2bab5f6da16a00ee7086aaf4cbb3b923f9959beb45b23e483518d5f2649f"
+            },
+            {
+              "name": "control-03",
+              "state": "FINISHED",
+              "raw_size": {
+                "width": 4000,
+                "height": 3000
+              },
+              "auto_shutter_ns": 39965296,
+              "auto_iso": 12150,
+              "plan": [
+                {
+                  "index": 0,
+                  "offset_ev": -2,
+                  "frame_role": "fixed_iso_exposure",
+                  "requested_exposure_time_ns": 9991324,
+                  "unclamped_exposure_time_ns": 9991324,
+                  "requested_iso": 3200,
+                  "unclamped_iso": 3200,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 31972236800,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 0.25,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 33333333,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.5681818,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": false
+                },
+                {
+                  "index": 1,
+                  "offset_ev": 0,
+                  "frame_role": "metered_middle_raw",
+                  "requested_exposure_time_ns": 39965296,
+                  "unclamped_exposure_time_ns": 39965296,
+                  "requested_iso": 3200,
+                  "unclamped_iso": 3200,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 127888947200,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 1,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 39965296,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.5681818,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": false
+                },
+                {
+                  "index": 2,
+                  "offset_ev": 2,
+                  "frame_role": "fixed_iso_exposure",
+                  "requested_exposure_time_ns": 103388880,
+                  "unclamped_exposure_time_ns": 159861184,
+                  "requested_iso": 3200,
+                  "unclamped_iso": 3200,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 330844416000,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 2.5869664520938365,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 103388880,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.5681818,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": true
+                },
+                {
+                  "index": 3,
+                  "offset_ev": 0,
+                  "frame_role": "longer_lower_iso_single",
+                  "requested_exposure_time_ns": 103388880,
+                  "unclamped_exposure_time_ns": 159861184,
+                  "requested_iso": 1237,
+                  "unclamped_iso": 1237,
+                  "iso_clamped": false,
+                  "requested_shutter_iso_product": 127892044560,
+                  "baseline_shutter_iso_product": 127888947200,
+                  "requested_product_ratio_to_baseline": 1.0000242191375237,
+                  "nominal_product_model": "Shutter times ISO is a nominal exposure model, not calibrated analogue gain",
+                  "requested_frame_duration_ns": 103388880,
+                  "manual_focus_requested": true,
+                  "requested_focus_distance": 0.5681818,
+                  "awb_lock_requested": true,
+                  "exposure_clamped": true
+                }
+              ],
+              "frames": [
+                {
+                  "frame": 0,
+                  "sha256": "ca94845fedc7d01175cfc5c4358b73f1f53c483d81ca5cf8a83397ff84c32a6d",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 9991324,
+                  "actual_iso": 3196,
+                  "white_clip_pct": 0.0005833333333333333,
+                  "timestamps_match": true
+                },
+                {
+                  "frame": 1,
+                  "sha256": "552742f04cec695418b47d4419207749e02d17743fc1cc7933e19efbb3b9503d",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 39965296,
+                  "actual_iso": 3196,
+                  "white_clip_pct": 0.014983333333333333,
+                  "timestamps_match": true
+                },
+                {
+                  "frame": 2,
+                  "sha256": "e1e322f42143c2a8ee84cbbbce7cea326867cc392132532a88f900349415bf49",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 103388880,
+                  "actual_iso": 3196,
+                  "white_clip_pct": 0.0413,
+                  "timestamps_match": true
+                },
+                {
+                  "frame": 3,
+                  "sha256": "6ad075f6943017e1ee65f27ae1d9bf09759ed212f794f809d0a2abeec232bdab",
+                  "bytes": 24029520,
+                  "shape": [
+                    3000,
+                    4000
+                  ],
+                  "cfa": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "black_per_channel": [
+                    64,
+                    64,
+                    64,
+                    64
+                  ],
+                  "white": 1023,
+                  "actual_exposure_ns": 103388880,
+                  "actual_iso": 1235,
+                  "white_clip_pct": 0.014258333333333331,
+                  "timestamps_match": true
+                }
+              ],
+              "controls": {
+                "same_long_shutter_2_3": true,
+                "bracket_iso_constant": true,
+                "focus_constant": true,
+                "awb_locked_all": true,
+                "wb_constant": true,
+                "unique_timestamps": true,
+                "unique_frame_numbers": true,
+                "all_timestamp_matches": true,
+                "all_tiff_exposure_matches": true,
+                "all_tiff_iso_matches": true,
+                "all_actual_shutter_equals_requested": true,
+                "same_shape_cfa": true
+              },
+              "verification": {
+                "source_sha256": [
+                  "ca94845fedc7d01175cfc5c4358b73f1f53c483d81ca5cf8a83397ff84c32a6d",
+                  "552742f04cec695418b47d4419207749e02d17743fc1cc7933e19efbb3b9503d",
+                  "e1e322f42143c2a8ee84cbbbce7cea326867cc392132532a88f900349415bf49",
+                  "6ad075f6943017e1ee65f27ae1d9bf09759ed212f794f809d0a2abeec232bdab"
+                ],
+                "pipeline_formula_checks": {
+                  "single": {
+                    "all_master_finite": true,
+                    "master_max_abs_formula_error": 0.0,
+                    "rgb_max_abs_formula_error": 0.0,
+                    "preview_exact_same_transform": true
+                  },
+                  "long-single": {
+                    "all_master_finite": true,
+                    "master_max_abs_formula_error": 4.780564610840088e-08,
+                    "rgb_max_abs_formula_error": 0.0,
+                    "preview_exact_same_transform": true
+                  },
+                  "merge": {
+                    "all_master_finite": true,
+                    "master_max_abs_formula_error": 1.1625135787340923e-07,
+                    "rgb_max_abs_formula_error": 0.0,
+                    "preview_exact_same_transform": true
+                  }
+                },
+                "rejected_saturated_positive_weight_count": [
+                  0,
+                  0,
+                  0
+                ],
+                "all_zero_weights_count": 80,
+                "relative_product_to_middle": [
+                  0.25,
+                  1.0,
+                  2.5869664520938365,
+                  0.9996569362753092
+                ],
+                "all_zero_weights_handling": "Shortest-source fallback checked by full formula reconstruction; these pixels cannot recover highlights clipped in every source."
+              },
+              "color_description": "RGBG",
+              "cfa_label": "GRBG",
+              "analysis_script_sha256": "da3b2bab5f6da16a00ee7086aaf4cbb3b923f9959beb45b23e483518d5f2649f"
+            }
+          ],
+          "log_paths": [
+            "normal/camera-0/comparison.log",
+            "normal/camera-0/control-01.log",
+            "normal/camera-0/control-02.log",
+            "normal/camera-0/control-03.log",
+            "normal/camera-0/pipeline-verification.log",
+            "normal/camera-0/source-audit.log"
+          ],
+          "analysis_error": null,
+          "analysis_status": "verified",
+          "saved_dngs": 12
+        }
+      ],
+      "physical": [],
+      "source_files": [
+        {
+          "path": "camera-0/captures/control-01/baseline-result.json",
+          "bytes": 84492,
+          "sha256": "10d459734666793b0190bae285398b70ea8d177721200e35be87c6abecaaaebd"
+        },
+        {
+          "path": "camera-0/captures/control-01/characteristics.json",
+          "bytes": 62082,
+          "sha256": "e72c3675b15824b2ce889de8c7059e9fe9a4e2a1c00afd79fd4d3e4e90fa2a84"
+        },
+        {
+          "path": "camera-0/captures/control-01/collection.json",
+          "bytes": 247,
+          "sha256": "8624b775f8a434ef073e863775746d136e6ffb2a5cd25d5886369ca9d41d8833"
+        },
+        {
+          "path": "camera-0/captures/control-01/frame-0-result.json",
+          "bytes": 114900,
+          "sha256": "b328343bd5af51f1cc1d95b5459176dc7261679fcaa2057361be71ac180be7fa"
+        },
+        {
+          "path": "camera-0/captures/control-01/frame-0.dng",
+          "bytes": 24029520,
+          "sha256": "e0006b6f9a8082661c1e7daa89987655595b79eef913f710197c78de12848046"
+        },
+        {
+          "path": "camera-0/captures/control-01/frame-1-result.json",
+          "bytes": 114906,
+          "sha256": "78cd8249f98e6b66e39613d7bf7d1a568aa76f866f10ccf044aa35b129b49db8"
+        },
+        {
+          "path": "camera-0/captures/control-01/frame-1.dng",
+          "bytes": 24029520,
+          "sha256": "aad72b81edb6019b455ea50dffd713797ee174be60686d837036ad71c5674abc"
+        },
+        {
+          "path": "camera-0/captures/control-01/frame-2-result.json",
+          "bytes": 114903,
+          "sha256": "4123bdf83a8d5317172267444349fedb887c8b82a33aa6b3a8ae5567795d3e3c"
+        },
+        {
+          "path": "camera-0/captures/control-01/frame-2.dng",
+          "bytes": 24029520,
+          "sha256": "95255e4911cd866db36c39f537b9fe64372f6bb07eac230cc2b3e8f09303a6e9"
+        },
+        {
+          "path": "camera-0/captures/control-01/frame-3-result.json",
+          "bytes": 114853,
+          "sha256": "d8240b0b37389ebf7a2083445bd529f42c6ccba1572a60850bd5a594d2e90642"
+        },
+        {
+          "path": "camera-0/captures/control-01/frame-3.dng",
+          "bytes": 24029520,
+          "sha256": "b1005e7a60e57a05c77617572f95e22978dab5cb21907993d71ef407cd8e3999"
+        },
+        {
+          "path": "camera-0/captures/control-01/run.json",
+          "bytes": 3749,
+          "sha256": "f8a041a86692b15b8bb7f3c14033061280b0aaaafc006ded6f212d89a8776670"
+        },
+        {
+          "path": "camera-0/captures/control-02/baseline-result.json",
+          "bytes": 84475,
+          "sha256": "406e63972a53c1365737e904d0c4cd871fea722f947052e9480d721a49b69df6"
+        },
+        {
+          "path": "camera-0/captures/control-02/characteristics.json",
+          "bytes": 62082,
+          "sha256": "e72c3675b15824b2ce889de8c7059e9fe9a4e2a1c00afd79fd4d3e4e90fa2a84"
+        },
+        {
+          "path": "camera-0/captures/control-02/collection.json",
+          "bytes": 247,
+          "sha256": "053313b15afd2bfbbe7ca165b2594dc73485ed768e2ae28d168f407186c8d8a1"
+        },
+        {
+          "path": "camera-0/captures/control-02/frame-0-result.json",
+          "bytes": 114864,
+          "sha256": "452c7af251abbf3993c503a3a7e9b37311a39757afacb466f87761141657d5f0"
+        },
+        {
+          "path": "camera-0/captures/control-02/frame-0.dng",
+          "bytes": 24029520,
+          "sha256": "2dd3835d2f4fa704b4b1e8d594c59d660876a33781b06a28fe1d280c9a92cd61"
+        },
+        {
+          "path": "camera-0/captures/control-02/frame-1-result.json",
+          "bytes": 114859,
+          "sha256": "20f66baa47d240e9fcdf99ba9658af361ab925c9517b41c5fa57f4700ff660ce"
+        },
+        {
+          "path": "camera-0/captures/control-02/frame-1.dng",
+          "bytes": 24029520,
+          "sha256": "db49aaee2c138be3fed3b056b824ad5b3d2bc98af6feb90d8b71ae4f67b621dd"
+        },
+        {
+          "path": "camera-0/captures/control-02/frame-2-result.json",
+          "bytes": 114951,
+          "sha256": "7228dced0e9950abc433413a9f25542406672989412f431c8cccf86a2b1a11a2"
+        },
+        {
+          "path": "camera-0/captures/control-02/frame-2.dng",
+          "bytes": 24029520,
+          "sha256": "fd5fc02f4c61e4404d2aeafa77be2937b8c8d4df8d7af7fdd43faf1a0d06be41"
+        },
+        {
+          "path": "camera-0/captures/control-02/frame-3-result.json",
+          "bytes": 114917,
+          "sha256": "2d48d1bd3999def67d22d781f99dd5af34a050447e5e6fc7c43145b67a43c469"
+        },
+        {
+          "path": "camera-0/captures/control-02/frame-3.dng",
+          "bytes": 24029520,
+          "sha256": "18c48f4284221ca9dd73ea5e0ffb5a9154b0830e57f923a5e3ab9e79ffd21d60"
+        },
+        {
+          "path": "camera-0/captures/control-02/run.json",
+          "bytes": 3749,
+          "sha256": "b163a62b3f73b95c28d91ea3bd307846a53a5d3da88f918517030fc79de5cefc"
+        },
+        {
+          "path": "camera-0/captures/control-03/baseline-result.json",
+          "bytes": 84476,
+          "sha256": "feacd00453921fb0bfa3099d1ff4bd6cb17978a02f3765cabbe01fed7409429a"
+        },
+        {
+          "path": "camera-0/captures/control-03/characteristics.json",
+          "bytes": 62082,
+          "sha256": "e72c3675b15824b2ce889de8c7059e9fe9a4e2a1c00afd79fd4d3e4e90fa2a84"
+        },
+        {
+          "path": "camera-0/captures/control-03/collection.json",
+          "bytes": 247,
+          "sha256": "195be64bdcbf4bb9ff54dd5604d3f0115641827a41c24b42b7808d37518a582e"
+        },
+        {
+          "path": "camera-0/captures/control-03/frame-0-result.json",
+          "bytes": 114864,
+          "sha256": "c38e79d4f067c8217f18b432391b497c64c63e85d4f9426cfa2ebd11586c469d"
+        },
+        {
+          "path": "camera-0/captures/control-03/frame-0.dng",
+          "bytes": 24029520,
+          "sha256": "ca94845fedc7d01175cfc5c4358b73f1f53c483d81ca5cf8a83397ff84c32a6d"
+        },
+        {
+          "path": "camera-0/captures/control-03/frame-1-result.json",
+          "bytes": 114855,
+          "sha256": "e8164ae08359ddb754baabbab776bf18ad319595b648ab3e9f5d998f272723cd"
+        },
+        {
+          "path": "camera-0/captures/control-03/frame-1.dng",
+          "bytes": 24029520,
+          "sha256": "552742f04cec695418b47d4419207749e02d17743fc1cc7933e19efbb3b9503d"
+        },
+        {
+          "path": "camera-0/captures/control-03/frame-2-result.json",
+          "bytes": 114866,
+          "sha256": "659c8d5dd25964de98702fc54baccd2085ee0bb1e7b2fc6f934babddaf33d9d1"
+        },
+        {
+          "path": "camera-0/captures/control-03/frame-2.dng",
+          "bytes": 24029520,
+          "sha256": "e1e322f42143c2a8ee84cbbbce7cea326867cc392132532a88f900349415bf49"
+        },
+        {
+          "path": "camera-0/captures/control-03/frame-3-result.json",
+          "bytes": 114817,
+          "sha256": "b748611cfdd7088621648b11c04777dc3884d47c82793914219bd24ecd6493fc"
+        },
+        {
+          "path": "camera-0/captures/control-03/frame-3.dng",
+          "bytes": 24029520,
+          "sha256": "6ad075f6943017e1ee65f27ae1d9bf09759ed212f794f809d0a2abeec232bdab"
+        },
+        {
+          "path": "camera-0/captures/control-03/run.json",
+          "bytes": 3744,
+          "sha256": "88434b029dc0be3db6d4f2f5e2304e02c7a8c76b63f78d7a7067a7dbc4f7699d"
+        },
+        {
+          "path": "capabilities/capabilities.json",
+          "bytes": 388127,
+          "sha256": "4d9f021808c77b5060863bfa92226a1e9467e3fb810b56670fb6a736932a4d2c"
+        },
+        {
+          "path": "capabilities/collection.json",
+          "bytes": 193,
+          "sha256": "eb3f1930d34a9a79f26fcdde48a3131214f3752ff24f5cbceb7698bb813be3ad"
+        },
+        {
+          "path": "capture-status.json",
+          "bytes": 556,
+          "sha256": "811ac89644e08713dfe5993760b1538f2cde3484153426a78f3a764732f461a6"
+        },
+        {
+          "path": "conditions.json",
+          "bytes": 644,
+          "sha256": "6b6a5facc41532f71f88c12e5a919d118059f1a428635b17fd41f5e5613c06d0"
+        }
+      ],
+      "cleanup": {
+        "actions": [
+          {
+            "action": "/usr/bin/adb -s [phone] shell am force-stop dev.shutrwise.probe",
+            "ok": true
+          },
+          {
+            "action": "/usr/bin/adb -s [phone] shell input keyevent 223",
+            "ok": true
+          }
+        ],
+        "ok": true,
+        "sleep_requested": true,
+        "keep_awake": false
+      }
+    }
+  }
+}

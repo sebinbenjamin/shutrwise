@@ -92,3 +92,17 @@ The owner asked to land the helper scripts in the repo for S25 Ultra reuse and r
 Dark capture (2026-10-07) saved 48 DNGs: three quartets for each listed camera 0-3. Physical IDs 5-7 again failed direct open and are recorded, not photographed. The first analysis pass failed for cameras 1-3: in dark conditions their longer/lower-ISO singles carry black level 64 while bracket frames carry 65, tripping the same-metadata assumption. The pipeline correctly refused rather than mixing calibrations. The analysis was corrected to normalize per frame (as the math already did), record `quartet_black_level_per_frame`, and require only structural layout equality; camera-0 (uniform black 64) was re-analyzed under the same code for within-condition schema consistency. All four dark cameras verify, and the analyze stage now honors `--camera-ids` and preserves prior status records.
 
 Evidence: `.scratch/shutrwise/assets/s22-ultra/all-camera-lighting-20261006/{normal,dark}/` with per-condition manifests and hashes. This is device-behavior evidence on the S22 only: no calibrated noise/DR, no Samsung baseline comparison, no S25 measurement, and no product-direction choice. A combined research report is the natural next step.
+
+
+### Samsung baseline comparison authorized — 2026-10-07
+
+The owner requested execution of the proposed same-scene S22 comparison: Samsung Photo, Samsung Pro RAW where available, custom longer single RAW and bracket merge. [The experiment record](../assets/s22-ultra/samsung-baseline-20261007/README.md) records the procedure and current state. Initial app opening revealed a lock-screen overlay; no comparison photographs have been taken. Awaiting the owner's unlock and confirmation of unchanged framing/lighting. This subexperiment does not resolve target S25 evidence.
+
+
+### Samsung baseline comparison completed — 2026-10-07
+
+The owner asked whether manual unlock could be avoided. ADB wake plus `wm dismiss-keyguard` succeeded, and agent-device verified access to Samsung Camera. No lock settings were changed. Completed three Photo JPEGs, three Pro DNG/JPEG pairs and three custom main-camera control quartets; one additional JPEG-only Pro smoke capture is preserved separately. Pro's original JPEG-only setting was restored.
+
+[The Samsung baseline report](../../../docs/research/samsung-baseline-20261007.md) preserves method, source records, measured values and interpretation limits. The inspected Pro DNG shadow views appear quieter, but exposure/processing differences prevent a calibrated ranking. The custom metered ISO was clamped and its longer-single control is not a globally optimized baseline. No custom superiority or target S25 claim follows. Custom source audits and independent verification passed. Both camera processes were absent after cleanup; display diagnostics included OFF and DOZE_SUSPEND.
+
+This adds S22 evidence without resolving the target S25 task. Matched manual exposure/ISO comparisons and S25 measurements remain outstanding; both output workflows and the product direction remain open.

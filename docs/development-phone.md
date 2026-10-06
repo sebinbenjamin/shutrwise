@@ -128,3 +128,15 @@ See [local check setup](development-checks.md) for pinned dependencies, `python3
 
 
 On 2026-10-07, a capability-only standalone run verified the cleanup path on the connected S22: the probe process stopped and display diagnostics reported OFF. No photos were taken. See [the retrospective validation record](research/session-retro-20261007.md#implementation-and-validation--2026-10-07). Local tests also cover failures and interruption; they do not substitute for checking the outcome of a future hardware run.
+
+
+## Resume an unattended run with a dismissible lock screen
+
+On 2026-10-07 the S22's lock-screen overlay was dismissed successfully with the workspace ADB after waking the display. Samsung Camera then became accessible through agent-device without the owner unlocking it manually. This leaves the lock configuration unchanged.
+
+```bash
+/home/t3agent/.local/share/shutrwise/android/platform-tools/adb shell input keyevent 224
+/home/t3agent/.local/share/shutrwise/android/platform-tools/adb shell wm dismiss-keyguard
+```
+
+Select the authorized device explicitly if several are connected. Verify the foreground app with agent-device afterward; a successful shell return alone does not establish dismissal. Android can dismiss a nonsecure or currently trusted keyguard; a secure, untrusted lock requires user authentication. See [Android's keyguard documentation](https://developer.android.com/reference/android/app/KeyguardManager#requestDismissKeyguard(android.app.Activity,%20android.app.KeyguardManager.KeyguardDismissCallback)). Do not automate credentials or change the owner's lock settings. Final cleanup still sleeps the screen with keyevent 223.
