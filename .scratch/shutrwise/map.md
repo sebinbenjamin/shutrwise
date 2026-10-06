@@ -31,6 +31,8 @@ Finish with a clear account of its intended user, value, and evidence needed to 
 
 - [Choose capture trials and evidence thresholds](./issues/04-choose-capture-trials.md): Keep scene coverage open; compare captured data and clearer decisions separately, treating a meaningful benefit in either as a provisional reason to continue.
 
+- [Explore capture and explanation interactions](./issues/06-explore-core-experience.md): Camera-led deliberate capture with visible duration, immediate shutter execution, optional priorities/explanations, and simple completion/cancellation; keep both output workflows for comparison.
+
 ## Not yet specified
 
 - Whether the reusable device-evidence batch (`tools/raw-camera-experiment`) can become a first-run onboarding/calibration step in the product, characterizing a new phone's cameras and limits on setup. This is a possible future reuse of the research tooling, not a chosen product behavior.
