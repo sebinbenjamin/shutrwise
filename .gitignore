@@ -1,0 +1,4 @@
+# Capture evidence trees stay local; only their markdown records are tracked.
+.scratch/shutrwise/assets/**
+!.scratch/shutrwise/assets/**/
+!.scratch/shutrwise/assets/**/*.md
