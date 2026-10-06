@@ -27,6 +27,7 @@ These are exploration inputs. The model, camera framework, capture algorithm, fi
 | [One RAW versus a bracket merge](docs/research/raw-bracket-comparison-20261006.md) | Matched renderings, independent audit, costs and limits |
 | [Longer single versus a bracket](docs/research/long-single-control-20261006.md) | Fresh paired captures testing a stronger single-RAW baseline |
 | [S25 Ultra evidence](.scratch/shutrwise/assets/device-evidence-record.md) | Owner-reported target-phone inventory and outstanding measurements |
+| [All listed RAW cameras, normal and dark](docs/research/all-camera-lighting-20261006.md) | Per-camera control quartets under two lightings; layouts, shutter limits and black-level calibration |
 | [Comparison method](.scratch/shutrwise/assets/initial-capture-comparison.md) | Baselines, conditions, sources of value and continuation criteria |
 | [Device evidence checklist](.scratch/shutrwise/assets/device-evidence-checklist.md) | Required capability records and comparison captures |
 | [Android capture research](docs/research/android-capture-controls.md) | Camera API facts and device-dependent unknowns |
