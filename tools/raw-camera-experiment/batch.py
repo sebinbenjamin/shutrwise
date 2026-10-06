@@ -2,7 +2,6 @@
 """Sequential RAW acquisitions, followed by a separate desktop analysis stage."""
 import argparse
 import datetime
-import hashlib
 import json
 from pathlib import Path
 import re
@@ -12,6 +11,8 @@ import sys
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 from adb_select import DeviceSelectionError, select_serial  # noqa: E402
+from device_lifecycle import DeviceRun  # noqa: E402
+from file_integrity import sha256_file, manifest, write_json  # noqa: E402
 
 PACKAGE = 'dev.shutrwise.probe'
 # A control quartet is frames 0-2 (fixed-ISO bracket) plus frame 3 (longer,
@@ -21,14 +22,12 @@ FRAMES_PER_CONTROL_RUN = 4
 PHYSICAL_CHECK_FRAMES = 1
 
 def save(path, value):
-    path.write_text(json.dumps(value, indent=2) + '\n')
+    write_json(path, value)
 
-def sha256_file(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
-
-def run(command, log, serial=None):
+def run(command, log, serial=None, ownership_fd=None):
     result = subprocess.run([str(v) for v in command], stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT, text=True, timeout=180)
+                            stderr=subprocess.STDOUT, text=True, timeout=180,
+                            pass_fds=(() if ownership_fd is None else (ownership_fd,)))
     output = result.stdout.replace(serial, '[development phone]') if serial else result.stdout
     log.parent.mkdir(parents=True, exist_ok=True)
     log.write_text(output)
@@ -46,7 +45,34 @@ def main():
     parser.add_argument('--analysis-python', type=Path, default=Path.home()/'.local/share/shutrwise/raw-inspection/bin/python')
     parser.add_argument('--camera-ids', nargs='+', help='Optional subset of directly listed cameras')
     parser.add_argument('--skip-physical-check', action='store_true')
+    parser.add_argument('--keep-awake', action='store_true', help='Keep the display awake after acquisition; apps still stop')
     args = parser.parse_args()
+    if args.stage == 'capture':
+        if (args.output.resolve()/args.lighting).exists():
+            parser.error('Lighting output already exists; choose a new root.')
+        try:
+            args.device = select_serial(args.adb, args.device)
+        except DeviceSelectionError as error:
+            parser.error(str(error))
+        with DeviceRun(args.adb, args.device, keep_awake=args.keep_awake,
+                       record=args.output.resolve()/args.lighting/'cleanup.json') as owner:
+            result = execute(args, parser, owner)
+        print('capture complete after cleanup for', args.lighting, flush=True)
+        return result
+    return execute(args, parser)
+
+
+def merge_status(existing, records):
+    merged = {r['camera_id']: r for r in existing}
+    merged.update({r['camera_id']: r for r in records})
+    return sorted(merged.values(), key=lambda r: r['camera_id'])
+
+
+def selected_cameras(cameras, ids):
+    return [c for c in cameras if c['status'] == 'captured' and (not ids or c['camera_id'] in ids)]
+
+
+def execute(args, parser, owner=None):
     folder = args.output.resolve()/args.lighting
     errors = []
     if args.stage == 'capture':
@@ -72,8 +98,9 @@ def main():
              'protocol': 'Three control quartets per directly listed RAW+MANUAL_SENSOR camera; physical IDs attempted once in single mode.',
              'caveat': 'Different focal lengths and front cameras see different fields of view. Front IDs may be overlapping paths, not distinct sensors.',
              'probe_apk_sha256': installed, 'capture_runner_sha256': sha256_file(HERE/'probe/run.py')})
-        common = [sys.executable, HERE/'probe/run.py', '--adb',args.adb,'--device',serial,'--skip-install']
-        run(common+['--action','capabilities','--output',folder/'capabilities'],folder/'capabilities.log',serial)
+        common = [sys.executable, HERE/'probe/run.py', '--adb',args.adb,'--device',serial,'--skip-install', '--ownership-fd', str(owner.fd)]
+        owner.started(PACKAGE)
+        run(common+['--action','capabilities','--output',folder/'capabilities'],folder/'capabilities.log',serial,owner.fd)
         capabilities = json.loads((folder/'capabilities/capabilities.json').read_text())
         listed = capabilities['listed_cameras']
         known = {c['id'] for c in listed}
@@ -96,7 +123,7 @@ def main():
                 name='single-access-check' if physical else f'control-{index:02d}'
                 destination=base/'captures'/name
                 try:
-                    run(common+['--action','capture','--camera-id',camera_id,'--mode','single' if physical else 'control','--output',destination],base/(name+'.log'),serial)
+                    run(common+['--action','capture','--camera-id',camera_id,'--mode','single' if physical else 'control','--output',destination],base/(name+'.log'),serial,owner.fd)
                     capture=json.loads((destination/'run.json').read_text())
                     expected=PHYSICAL_CHECK_FRAMES if physical else FRAMES_PER_CONTROL_RUN
                     if capture['state']!='FINISHED' or len(list(destination.glob('frame-*.dng')))!=expected:
@@ -127,9 +154,7 @@ def main():
         if status_path.exists():
             existing={r['camera_id']:r for r in json.loads(status_path.read_text())['cameras']}
         records=[]
-        for c in status['cameras']:
-            if c['status']!='captured':continue
-            if args.camera_ids and c['camera_id'] not in args.camera_ids:continue
+        for c in selected_cameras(status['cameras'], args.camera_ids):
             base=folder/('camera-'+c['camera_id'])
             if (base/'comparison').exists():
                 parser.error(f'Analysis output already exists for {base.name}. Preserve it and use a fresh capture root.')
@@ -142,12 +167,18 @@ def main():
             except (RuntimeError,subprocess.TimeoutExpired) as error:
                 record['status']='analysis_failed';record['error']=str(error);errors.append(c['camera_id'])
                 print(base.name,record['error'],flush=True)
-            save(status_path,{'cameras':sorted(records+[r for k,r in existing.items()
-                        if k not in {x['camera_id'] for x in records}],
-                        key=lambda r:r['camera_id'])})
-    files=[{'path':str(p.relative_to(folder)),'bytes':p.stat().st_size,'sha256':sha256_file(p)} for p in sorted(folder.rglob('*')) if p.is_file() and p.name!='manifest.json']
-    save(folder/'manifest.json',{'files':files})
-    print(args.stage,'complete for',args.lighting,'; failures:',errors,flush=True)
+            save(status_path, {'cameras': merge_status(list(existing.values()), records)})
+    if args.stage == 'capture':
+        files = [p for p in folder.rglob('*') if p.is_file() and
+                 ('captures' in p.parts or 'capabilities' in p.parts or
+                  p.name in ('conditions.json', 'capture-status.json'))]
+        save(folder/'source-manifest.json', manifest(folder, files))
+    else:
+        files = [p for p in folder.rglob('*') if p.is_file() and
+                 ('comparison' in p.parts or p.name in
+                  ('source-audit.json', 'pipeline-verification.json', 'analysis-status.json'))]
+        save(folder/'analysis-manifest.json', manifest(folder, files))
+    print(args.stage,'files saved for',args.lighting,'; failures:',errors,flush=True)
     return 1 if errors else 0
 
 if __name__ == '__main__':

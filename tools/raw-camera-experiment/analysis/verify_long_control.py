@@ -4,6 +4,9 @@
 # with the analysis pipeline it verifies.
 import argparse,hashlib,json
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from file_integrity import sha256_file  # noqa: E402
 import numpy as np
 from PIL import Image
 import rawpy,tifffile
@@ -19,7 +22,7 @@ for d in sorted(a.source.glob('control-*')):
  if not d.is_dir():continue
  norm=[];iso=[];times=[];clipped=[];source_hashes=[]
  for i in range(4):
-  path=d/f'frame-{i}.dng';meta=json.loads((d/f'frame-{i}-result.json').read_text())['result'];iso.append(meta['android.sensor.sensitivity']);times.append(meta['android.sensor.exposureTime']);source_hashes.append(hashlib.sha256(path.read_bytes()).hexdigest())
+  path=d/f'frame-{i}.dng';meta=json.loads((d/f'frame-{i}-result.json').read_text())['result'];iso.append(meta['android.sensor.sensitivity']);times.append(meta['android.sensor.exposureTime']);source_hashes.append(sha256_file(path))
   with rawpy.imread(str(path)) as raw:
    x=raw.raw_image_visible.copy();black=np.asarray(raw.black_level_per_channel,dtype=np.float32)[raw.raw_colors_visible];norm.append((x.astype(np.float32)-black)/(raw.white_level-black));clipped.append(x>=raw.white_level);pattern=raw.raw_pattern.copy()
  relative=np.asarray(times,dtype=float)*np.asarray(iso)/(times[1]*iso[1]);weights=[float(e)*np.clip((.98-x)/.18,0,1) for x,e in zip(norm[:3],relative[:3])];total=sum(weights)

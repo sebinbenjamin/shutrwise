@@ -1,0 +1,2 @@
+-r tools/raw-camera-experiment/analysis/requirements.txt
+ruff==0.14.3

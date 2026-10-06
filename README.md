@@ -47,3 +47,9 @@ The delegated data experiments compared brackets with their metered middle RAW a
 ## Repository conventions
 
 [AGENTS.md](AGENTS.md) defines agent instructions; [CLAUDE.md](CLAUDE.md) imports it. Decisions and tasks use local Markdown under `.scratch/shutrwise/`. Read the [issue-tracker conventions](docs/agents/issue-tracker.md) before changing tracker state. Original evidence belongs with its device or comparison record, with conditions and limitations stated.
+
+## Local checks and recoverable evidence
+
+Run `python3 tools/check.py` for local lint, regressions and generated-report checks. Follow [local setup](docs/development-checks.md) to install dependencies and the pre-commit gate. GitHub CI is deferred.
+
+Git preserves [compact evidence indexes](evidence/README.md) and the [capture-flow source](prototypes/capture-flow/README.md). Large RAW originals and derived outputs remain under the owner's regular VM backups. A clone restores the tracked facts and code; image bytes come from those VM backups.

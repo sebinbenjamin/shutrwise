@@ -8,12 +8,12 @@ This is device-behavior evidence on one phone. It does not measure Samsung-pipel
 
 | Camera ID | Facing | Focal | RAW mosaic | CFA layout | Quartets per condition |
 | --- | --- | --- | --- | --- | --- |
-| 0 | back | 6.4 mm | 3000 × 4000 | GBRG | 3 + 3 |
-| 1 | front | 3.8 mm | 2736 × 3648 | GBRG | 3 + 3 |
+| 0 | back | 6.4 mm | 3000 × 4000 | GRBG | 3 + 3 |
+| 1 | front | 3.8 mm | 2736 × 3648 | GRBG | 3 + 3 |
 | 2 | back | 2.2 mm | 3000 × 4000 | RGGB | 3 + 3 |
-| 3 | front | 3.8 mm | 2208 × 3216 | GBRG | 3 + 3 |
+| 3 | front | 3.8 mm | 2208 × 3216 | GRBG | 3 + 3 |
 
-Two Bayer layouts coexist on one device: the ultrawide (ID 2) reports `RGGB` while the other three report `GBRG`. The two front paths share focal length and facing but remain distinct API paths; this table does not prove four distinct sensors. IDs 1 and 3 returned identical shutter/ISO behavior in the dark condition.
+Two Bayer layouts coexist on one device: the ultrawide (ID 2) reports `RGGB` while the other three report `GRBG`. The two front paths share focal length and facing but remain distinct API paths; this table does not prove four distinct sensors. IDs 1 and 3 returned identical shutter/ISO behavior in the dark condition.
 
 ## Capture behavior and limits
 
@@ -48,3 +48,95 @@ python3 tools/raw-camera-experiment/batch.py --stage analyze --lighting dark \
 ```
 
 Evidence lives in `.scratch/shutrwise/assets/s22-ultra/all-camera-lighting-20261006/{normal,dark}/`, each condition holding originals, capability records, per-camera comparisons, source audits, pipeline verification, logs and a whole-tree sha256 [manifest](../../.scratch/shutrwise/assets/s22-ultra/all-camera-lighting-20261006/normal/manifest.json); `analysis-status.json` records every camera as verified. Originals are never modified by analysis. Desktop processing time is not phone capture latency. The evidence task remains open pending S25 measurement and product-direction decisions; nothing here selects a capture strategy for the product.
+
+## Recorded capture facts
+
+<!-- BEGIN GENERATED CAMERA FACTS -->
+
+| Lighting | Camera / facing | RAW / CFA | Middle ms / ISO | Longer single ms / ISO | Bracket / single integration | RAW storage |
+| --- | --- | --- | --- | --- | --- | --- |
+| dark control-01 | 0 / back | 4000 × 3000 / GRBG | 39.965 / 3196 | 103.389 / 1235 | 1.4832× | 3.00× |
+| dark control-02 | 0 / back | 4000 × 3000 / GRBG | 39.965 / 3196 | 103.389 / 1235 | 1.4832× | 3.00× |
+| dark control-03 | 0 / back | 4000 × 3000 / GRBG | 39.965 / 3196 | 103.389 / 1235 | 1.4832× | 3.00× |
+| dark control-01 | 1 / front | 3648 × 2736 / GRBG | 39.965 / 2281 | 159.861 / 570 | 1.3125× | 3.00× |
+| dark control-02 | 1 / front | 3648 × 2736 / GRBG | 39.965 / 2281 | 159.861 / 570 | 1.3125× | 3.00× |
+| dark control-03 | 1 / front | 3648 × 2736 / GRBG | 39.965 / 2281 | 159.861 / 570 | 1.3125× | 3.00× |
+| dark control-01 | 2 / back | 4000 × 3000 / RGGB | 39.965 / 1601 | 103.389 / 618 | 1.4832× | 3.00× |
+| dark control-02 | 2 / back | 4000 × 3000 / RGGB | 39.965 / 1601 | 103.389 / 618 | 1.4832× | 3.00× |
+| dark control-03 | 2 / back | 4000 × 3000 / RGGB | 39.965 / 1601 | 103.389 / 618 | 1.4832× | 3.00× |
+| dark control-01 | 3 / front | 3216 × 2208 / GRBG | 39.965 / 2281 | 159.861 / 570 | 1.3125× | 3.00× |
+| dark control-02 | 3 / front | 3216 × 2208 / GRBG | 39.965 / 2281 | 159.861 / 570 | 1.3125× | 3.00× |
+| dark control-03 | 3 / front | 3216 × 2208 / GRBG | 39.965 / 2281 | 159.861 / 570 | 1.3125× | 3.00× |
+| normal control-01 | 0 / back | 4000 × 3000 / GRBG | 19.983 / 1214 | 79.931 / 303 | 1.3125× | 3.00× |
+| normal control-02 | 0 / back | 4000 × 3000 / GRBG | 19.983 / 1210 | 79.931 / 302 | 1.3125× | 3.00× |
+| normal control-03 | 0 / back | 4000 × 3000 / GRBG | 19.983 / 1210 | 79.931 / 302 | 1.3125× | 3.00× |
+| normal control-01 | 1 / front | 3648 × 2736 / GRBG | 29.994 / 200 | 119.977 / 50 | 1.3125× | 3.00× |
+| normal control-02 | 1 / front | 3648 × 2736 / GRBG | 29.994 / 191 | 119.977 / 50 | 1.3125× | 3.00× |
+| normal control-03 | 1 / front | 3648 × 2736 / GRBG | 29.994 / 197 | 119.977 / 50 | 1.3125× | 3.00× |
+| normal control-01 | 2 / back | 4000 × 3000 / RGGB | 29.994 / 621 | 103.389 / 180 | 1.3626× | 3.00× |
+| normal control-02 | 2 / back | 4000 × 3000 / RGGB | 29.994 / 621 | 103.389 / 180 | 1.3626× | 3.00× |
+| normal control-03 | 2 / back | 4000 × 3000 / RGGB | 29.994 / 625 | 103.389 / 181 | 1.3626× | 3.00× |
+| normal control-01 | 3 / front | 3216 × 2208 / GRBG | 29.994 / 196 | 119.977 / 50 | 1.3125× | 3.00× |
+| normal control-02 | 3 / front | 3216 × 2208 / GRBG | 29.994 / 200 | 119.977 / 50 | 1.3125× | 3.00× |
+| normal control-03 | 3 / front | 3216 × 2208 / GRBG | 29.994 / 207 | 119.977 / 51 | 1.3125× | 3.00× |
+
+Integration is summed sensor exposure, not elapsed capture latency. Paths without four recorded frames are excluded from this table.
+
+dark: physical direct-access failures: 5, 6, 7.
+normal: physical direct-access failures: 5, 6, 7.
+
+| Lighting / camera / run | Auto ISO → middle ISO | Black bracket → single | Middle / single clipping % | Long shutter clamped | Single / middle nominal product |
+| --- | --- | --- | --- | --- | --- |
+| dark / 0 / control-01 | 12150 → 3196 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.01523 / 0.01471 | True | 0.999657 |
+| dark / 0 / control-02 | 12150 → 3196 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.01529 / 0.01468 | True | 0.999657 |
+| dark / 0 / control-03 | 12150 → 3196 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.01524 / 0.01453 | True | 0.999657 |
+| dark / 1 / control-01 | 2284 → 2281 | [65, 65, 65, 65] → [64, 64, 64, 64] | 0.00001 / 0.00001 | False | 0.999562 |
+| dark / 1 / control-02 | 2284 → 2281 | [65, 65, 65, 65] → [64, 64, 64, 64] | 0.00001 / 0.00001 | False | 0.999562 |
+| dark / 1 / control-03 | 2284 → 2281 | [65, 65, 65, 65] → [64, 64, 64, 64] | 0.00002 / 0.00001 | False | 0.999562 |
+| dark / 2 / control-01 | 1603 → 1601 | [65, 65, 65, 65] → [64, 64, 64, 64] | 0.00220 / 0.00224 | True | 0.998592 |
+| dark / 2 / control-02 | 1603 → 1601 | [65, 65, 65, 65] → [64, 64, 64, 64] | 0.00237 / 0.00230 | True | 0.998592 |
+| dark / 2 / control-03 | 1603 → 1601 | [65, 65, 65, 65] → [64, 64, 64, 64] | 0.00222 / 0.00221 | True | 0.998592 |
+| dark / 3 / control-01 | 2284 → 2281 | [65, 65, 65, 65] → [64, 64, 64, 64] | 0.00001 / 0.00001 | False | 0.999562 |
+| dark / 3 / control-02 | 2284 → 2281 | [65, 65, 65, 65] → [64, 64, 64, 64] | 0.00001 / 0.00001 | False | 0.999562 |
+| dark / 3 / control-03 | 2284 → 2281 | [65, 65, 65, 65] → [64, 64, 64, 64] | 0.00001 / 0.00001 | False | 0.999562 |
+| normal / 0 / control-01 | 1215 → 1214 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.06335 / 0.06352 | False | 0.998353 |
+| normal / 0 / control-02 | 1212 → 1210 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.06344 / 0.06276 | False | 0.998347 |
+| normal / 0 / control-03 | 1212 → 1210 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.06310 / 0.06297 | False | 0.998347 |
+| normal / 1 / control-01 | 200 → 200 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.01080 / 0.01115 | False | 1.000000 |
+| normal / 1 / control-02 | 192 → 191 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.00000 / 0.00000 | False | 1.047120 |
+| normal / 1 / control-03 | 198 → 197 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.01034 / 0.01078 | False | 1.015228 |
+| normal / 2 / control-01 | 623 → 621 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.44865 / 0.46330 | True | 0.999118 |
+| normal / 2 / control-02 | 623 → 621 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.44857 / 0.47241 | True | 0.999118 |
+| normal / 2 / control-03 | 626 → 625 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.46089 / 0.47200 | True | 0.998239 |
+| normal / 3 / control-01 | 197 → 196 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.00000 / 0.00000 | False | 1.020408 |
+| normal / 3 / control-02 | 200 → 200 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.00779 / 0.00796 | False | 1.000000 |
+| normal / 3 / control-03 | 208 → 207 | [64, 64, 64, 64] → [64, 64, 64, 64] | 0.00000 / 0.00000 | False | 0.985507 |
+
+| Lighting / camera / run | Focal lengths mm | Auto shutter ms | Actual bracket EV relative to middle |
+| --- | --- | --- | --- |
+| dark / 0 / control-01 | [6.4] | 39.965296 | -2.000 / +0.000 / +1.371 |
+| dark / 0 / control-02 | [6.4] | 39.965296 | -2.000 / +0.000 / +1.371 |
+| dark / 0 / control-03 | [6.4] | 39.965296 | -2.000 / +0.000 / +1.371 |
+| dark / 1 / control-01 | [3.8] | 39.965296 | -2.000 / +0.000 / +2.000 |
+| dark / 1 / control-02 | [3.8] | 39.965296 | -2.000 / +0.000 / +2.000 |
+| dark / 1 / control-03 | [3.8] | 39.965296 | -2.000 / +0.000 / +2.000 |
+| dark / 2 / control-01 | [2.2] | 39.965296 | -2.000 / +0.000 / +1.371 |
+| dark / 2 / control-02 | [2.2] | 39.965296 | -2.000 / +0.000 / +1.371 |
+| dark / 2 / control-03 | [2.2] | 39.965296 | -2.000 / +0.000 / +1.371 |
+| dark / 3 / control-01 | [3.8] | 39.965296 | -2.000 / +0.000 / +2.000 |
+| dark / 3 / control-02 | [3.8] | 39.965296 | -2.000 / +0.000 / +2.000 |
+| dark / 3 / control-03 | [3.8] | 39.965296 | -2.000 / +0.000 / +2.000 |
+| normal / 0 / control-01 | [6.4] | 19.982648 | -2.000 / +0.000 / +2.000 |
+| normal / 0 / control-02 | [6.4] | 19.982648 | -2.000 / +0.000 / +2.000 |
+| normal / 0 / control-03 | [6.4] | 19.982648 | -2.000 / +0.000 / +2.000 |
+| normal / 1 / control-01 | [3.8] | 29.994234 | -2.000 / +0.000 / +2.000 |
+| normal / 1 / control-02 | [3.8] | 29.994234 | -2.000 / +0.000 / +2.000 |
+| normal / 1 / control-03 | [3.8] | 29.994234 | -2.000 / +0.000 / +2.000 |
+| normal / 2 / control-01 | [2.2] | 29.994234 | -2.000 / +0.000 / +1.785 |
+| normal / 2 / control-02 | [2.2] | 29.994234 | -2.000 / +0.000 / +1.785 |
+| normal / 2 / control-03 | [2.2] | 29.994234 | -2.000 / +0.000 / +1.785 |
+| normal / 3 / control-01 | [3.8] | 29.994234 | -2.000 / +0.000 / +2.000 |
+| normal / 3 / control-02 | [3.8] | 29.994234 | -2.000 / +0.000 / +2.000 |
+| normal / 3 / control-03 | [3.8] | 29.994234 | -2.000 / +0.000 / +2.000 |
+
+<!-- END GENERATED CAMERA FACTS -->

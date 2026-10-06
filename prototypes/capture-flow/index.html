@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shutrwise capture-flow prototype — Camera chooses</title>
+<style>
+  :root { --accent:#0e7c6b; --ink:#1c2321; --muted:#5f6b67; --line:#dce3e0; --bg:#f7f9f8; --card:#ffffff; --warn:#8a5a00; --bg2:#eef4f2; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); margin:0; padding:32px 16px 64px; line-height:1.5; }
+  main { max-width:920px; margin:0 auto; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 6px; font-size:14px; }
+  .intro { background:var(--bg2); border:1px solid var(--line); border-radius:10px; padding:14px 16px; font-size:14px; margin:14px 0 22px; }
+  .sim { display:inline-block; background:#fff4d6; border:1px solid #e6d195; color:var(--warn); border-radius:4px; padding:0 6px; font-size:11px; font-weight:600; letter-spacing:.04em; vertical-align:1px; }
+  h2 { font-size:15px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 10px; }
+  .state { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  .changed { border-left:4px solid var(--accent); background:#f0faf7; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px; }
+  .panel { border:1px solid var(--line); border-radius:8px; padding:10px 12px; font-size:14px; }
+  .panel h3 { margin:0 0 6px; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .kv { display:flex; justify-content:space-between; gap:10px; padding:1px 0; }
+  .kv b { font-weight:600; text-align:right; }
+  .frame { display:flex; justify-content:space-between; gap:8px; border-top:1px dashed var(--line); padding:3px 0; }
+  .frame:first-of-type { border-top:none; }
+  button { font:inherit; background:var(--card); color:var(--ink); border:1px solid #b9c4c0; border-radius:8px; padding:7px 12px; cursor:pointer; }
+  button:hover { border-color:var(--accent); color:var(--accent); }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  button.primary:hover { filter:brightness(1.08); color:#fff; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .group-label { font-size:12px; color:var(--muted); margin:10px 0 2px; }
+  .tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+  .tab { border-radius:999px; padding:6px 14px; }
+  .tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .scenario { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+  .scenario p { margin:0 0 10px; font-size:14px; }
+  .step { display:flex; gap:10px; align-items:flex-start; padding:6px 0; border-top:1px dashed var(--line); }
+  .step:first-of-type { border-top:none; }
+  .step .n { flex:0 0 22px; height:22px; border-radius:50%; background:var(--bg2); color:var(--muted); font-size:12px; display:flex; align-items:center; justify-content:center; margin-top:4px; }
+  .step.done .n { background:var(--accent); color:#fff; }
+  .step button { margin-top:2px; }
+  .note { font-size:12.5px; color:var(--muted); }
+  .evidence { font-size:12.5px; color:var(--muted); border-top:1px solid var(--line); margin-top:8px; padding-top:8px; }
+  .evidence b { color:var(--ink); font-weight:600; }
+  ul.tight { margin:6px 0 0; padding-left:18px; }
+  ul.tight li { margin:2px 0; }
+  .warnbox { background:#fff8e8; border:1px solid #e6d195; border-radius:8px; padding:8px 12px; font-size:13px; margin-top:10px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Capture-flow prototype — “Camera chooses and shows the plan”</h1>
+  <p class="sub">Throwaway discussion prototype for <i>Explore capture and explanation interactions</i>. One file, nothing installed, no data leaves this page.</p>
+  <div class="intro">
+    <b>The question this demo answers:</b> does the capture-plan interaction feel right — the plan appearing before the shutter,
+    how it adapts to conditions and priorities, what guidance appears during capture, what the explanation admits afterwards,
+    and how the two after-capture workflows differ? Drive the buttons and react to anything that feels wrong.
+    <br><br>
+    <span class="sim">SIMULATED</span> Everything about the <i>scene</i> (brightness, movement, faces) is simulated — the S22 probe
+    measured capture and file behavior, never scene recognition. Numbers about <i>exposures, files and trade-offs</i> come from
+    measured S22 evidence (2026-10-06/07) and are marked <b>[measured]</b>.
+  </div>
+
+  <h2>Current state</h2>
+  <div class="state" id="state"></div>
+
+  <h2>Free play — any order</h2>
+  <div class="scenario">
+    <div class="group-label">Observe a scene (sets the simulated conditions)</div>
+    <div class="actions" id="observeButtons"></div>
+    <div class="group-label">Conditions change</div>
+    <div class="actions" id="changeButtons"></div>
+    <div class="group-label">Express a priority (revises the plan)</div>
+    <div class="actions" id="priorityButtons"></div>
+    <div class="group-label">Capture &amp; after</div>
+    <div class="actions" id="flowButtons"></div>
+  </div>
+
+  <h2>Guided walkthroughs</h2>
+  <div class="tabs" id="tabs"></div>
+  <div class="scenario" id="scenarioBody"></div>
+
+  <p class="note" style="margin-top:26px">Prototype only. The state module on this page is the durable part; the page is throwaway.
+  Evidence sources: S22 capability probe, longer-single control, and all-camera normal/dark batch (research reports in the repo).</p>
+</main>
+
+<script>
+// ---------------------------------------------------------------------------
+// PURE MODULE — the part meant to be lifted. No DOM below this line.
+// Camera profile = what a first-run onboarding calibration would gather on a
+// new phone (measured here on the S22 Ultra, 2026-10-06/07).
+// ---------------------------------------------------------------------------
+const CAMERA_PROFILE = {
+  model: "S22 Ultra (back main, measured)",
+  longShutterCeilingMs: 103.389,        // [measured] back paths clamp here; front paths reach 159.861
+  rawBytesPerFile: 24029520,            // [measured] 24.0 MB per 12 MP DNG
+  blackLevelPerFrameCanDiffer: true,    // [measured] dark: bracket 65 vs single 64 on front/ultrawide
+};
+
+const SCENES = {
+  beach:  { id:"beach",  label:"Beach sunset — still, tripod, bright sky + dark foreground",
+            brightnessRange:"high", movement:"still", support:"tripod", faces:false, meteredIso:1214, meteredMs:19.983 },
+  group:  { id:"group",  label:"Group in shade — handheld, faces shaded, bright background",
+            brightnessRange:"high", movement:"moving", support:"handheld", faces:true, meteredIso:2281, meteredMs:39.965 },
+  dimroom:{ id:"dimroom",label:"Dim room — still, tripod, low light",
+            brightnessRange:"low", movement:"still", support:"tripod", faces:false, meteredIso:3196, meteredMs:39.965 },
+};
+
+function clampLong(ms, support){
+  let cap = CAMERA_PROFILE.longShutterCeilingMs;              // [measured]
+  if (support === "handheld") cap = Math.min(cap, 20);        // heuristic, NOT measured
+  return Math.min(ms, cap);
+}
+
+// Pure: (scene, priority) -> plan. The heart of the interaction question.
+function proposePlan(scene, priority){
+  if (!scene) return null;
+  const shortShutterCap = 10; // sharpness heuristic for movement/faces, NOT measured
+  const reasons = [];
+  let frames, mode;
+
+  const wantsFaces = scene.faces || priority === "keep-faces-sharp";
+  const moving = scene.movement === "moving";
+
+  if (moving || (wantsFaces && priority === "keep-faces-sharp")) {
+    mode = "single";
+    const ms = Math.min(scene.meteredMs, shortShutterCap);
+    const iso = Math.round(scene.meteredIso * scene.meteredMs / ms);
+    frames = [{ role:"only", shutterMs:round(ms), iso, why:"Shutter kept short so faces stay sharp" }];
+    reasons.push("People may move: one exposure avoids misaligned frames and ghosting.");
+    if (scene.brightnessRange === "low")
+      reasons.push("[measured] In dim light, extra frames agreed less with the reference exposure (wider ratio spread), so stacking buys less than it costs here.");
+  } else if (scene.brightnessRange === "high" && priority !== "faster") {
+    mode = "bracket";
+    const mid = scene.meteredMs, midIso = scene.meteredIso;
+    const long = clampLong(mid * 4, scene.support);
+    const short = mid / 4;
+    frames = [
+      { role:"short (-2 EV)", shutterMs:round(short), iso:midIso, why:"Keeps sky/highlight detail unsaturated" },
+      { role:"middle (metered)", shutterMs:round(mid), iso:midIso, why:"Overall exposure the camera measured" },
+      { role:"long (+2 EV)", shutterMs:round(long), iso:midIso, why:"Lifts shadows; clamped to this camera's longest shutter where needed" },
+    ];
+    if (long < mid * 4) reasons.push(`Longest shutter clamped to ${CAMERA_PROFILE.longShutterCeilingMs} ms [measured ceiling]; ISO compensates.`);
+    reasons.push("[measured] Bracket = 3× the file storage and ~1.31× the total exposure time of one longer single; the merged look was less grainy in the tested scene (qualitative).");
+    reasons.push("[measured] Where the middle frame clipped, the short frame still had unsaturated pixels (~0.05% of the frame) — small but real highlight support.");
+  } else {
+    mode = "single-long";
+    const mid = scene.meteredMs, midIso = scene.meteredIso;
+    const long = clampLong(mid * 4, scene.support);
+    const iso = Math.round(midIso * mid / long);
+    frames = [{ role:"only", shutterMs:round(long), iso, why:"One longer exposure at lower ISO, instead of several frames" }];
+    reasons.push(priority === "faster" ? "You asked for faster: one frame, no waiting on a sequence." : "Scene range looks moderate: one well-chosen exposure is the plan.");
+    reasons.push("[measured] A longer/lower-ISO single showed less grain than the metered frame with similar brightness and slightly more clipping (one tested scene).");
+    if (long < mid * 4) reasons.push(`Longest shutter clamped to ${CAMERA_PROFILE.longShutterCeilingMs} ms [measured ceiling]; ISO compensates.`);
+  }
+  return { mode, frames, reasons, priorityAtPlan:priority,
+           files: frames.length, bytes: frames.length * CAMERA_PROFILE.rawBytesPerFile };
+}
+
+const INITIAL = { phase:"idle", sceneId:null, scene:null, priority:"standard", plan:null, planHidden:false,
+                  progress:null, result:null, workflow:"photo", explanationOpen:false, lastChange:"Ready. Observe a scene to begin." };
+
+// Pure reducer: (state, action) -> state. The scene lives IN the state
+// (copied from the SCENES library on observe) so conditions changes never
+// mutate the shared library.
+function reduce(state, action){
+  const s = { ...state, lastChange:"" };
+  const scene = s.scene;
+  switch (action.type) {
+    case "observe": {
+      const sc = SCENES[action.sceneId];
+      const rev = s.phase === "plan" && s.sceneId === action.sceneId;
+      s.sceneId = action.sceneId; s.scene = { ...sc }; s.phase = "plan";
+      s.plan = proposePlan(s.scene, s.priority);
+      s.progress = null; s.result = null; s.explanationOpen = false;
+      s.lastChange = rev ? "Re-observed the same scene — plan refreshed." : `Scene observed. Plan proposed: ${describePlan(s.plan)}.`;
+      return s;
+    }
+    case "conditions": {
+      if (!scene) return { ...s, lastChange:"Nothing to change yet — observe a scene first." };
+      const changed = { ...scene };
+      if (action.change === "movement-starts") { changed.movement = "moving"; }
+      if (action.change === "light-drops") { changed.brightnessRange = "low"; changed.meteredIso = 3196; changed.meteredMs = 39.965; }
+      s.scene = changed;
+      if (s.phase === "capturing") {
+        const kept = s.progress.framesDone;
+        s.result = { mode:s.plan.mode, planned:s.plan.frames.length, captured:kept, interrupted:true,
+                     frames:s.plan.frames.slice(0, Math.max(kept,1)) };
+        s.phase = "result";
+        s.lastChange = "Movement began mid-sequence: remaining frames dropped, usable frames kept. The explanation says exactly what was saved.";
+        return s;
+      }
+      s.plan = proposePlan(changed, s.priority);
+      s.phase = "plan";
+      s.lastChange = `Conditions changed (${action.change.replace("-"," ")}). Plan revised: ${describePlan(s.plan)}.`;
+      return s;
+    }
+    case "priority": {
+      if (!scene) return { ...s, lastChange:"Observe a scene first — priorities revise a plan." };
+      s.priority = action.priority;
+      s.plan = proposePlan(scene, s.priority);
+      s.phase = "plan"; s.result = null; s.progress = null; s.explanationOpen = false;
+      s.lastChange = `Priority "${action.priority}" — plan now: ${describePlan(s.plan)}.`;
+      return s;
+    }
+    case "shutter": {
+      if (s.phase !== "plan") return { ...s, lastChange:"The shutter works from a proposed plan." };
+      s.phase = "capturing"; s.progress = { framesDone:0, total:s.plan.frames.length };
+      s.lastChange = "Capture started. Hold the framing steady while frames are taken.";
+      return s;
+    }
+    case "next-frame": {
+      if (s.phase !== "capturing") return { ...s, lastChange:"No capture in progress." };
+      const done = s.progress.framesDone + 1;
+      if (done >= s.progress.total) {
+        // [measured] actual settings matched requested settings on every verified quartet
+        s.result = { mode:s.plan.mode, planned:s.plan.frames.length, captured:s.plan.frames.length,
+                     interrupted:false, frames:s.plan.frames };
+        s.phase = "result"; s.progress = null;
+        s.lastChange = "Capture finished. What was requested is what was recorded [measured: actual = requested on verified S22 quartets].";
+      } else {
+        s.progress = { ...s.progress, framesDone:done };
+        s.lastChange = `Frame ${done} of ${s.progress.total} saved.`;
+      }
+      return s;
+    }
+    case "explanation": {
+      s.explanationOpen = !s.explanationOpen;
+      s.lastChange = s.explanationOpen ? "Explanation opened." : "Explanation closed.";
+      return s;
+    }
+    case "workflow": {
+      s.workflow = action.workflow;
+      s.lastChange = `After-capture workflow: ${action.workflow === "photo" ? "finished photo first, RAWs preserved" : "RAW editing first"}.`;
+      return s;
+    }
+    case "reset": return { ...INITIAL };
+    default: return state;
+  }
+}
+
+function round(n){ return Math.round(n * 1000) / 1000; }
+function describePlan(plan){
+  if (!plan) return "no plan";
+  return plan.mode === "bracket" ? `3-frame RAW bracket (${plan.frames.map(f=>f.shutterMs+" ms").join(" / ")})`
+       : plan.mode === "single-long" ? `one longer/lower-ISO RAW (${plan.frames[0].shutterMs} ms, ISO ${plan.frames[0].iso})`
+       : `one short-exposure RAW (${plan.frames[0].shutterMs} ms, ISO ${plan.frames[0].iso})`;
+}
+
+// ---------------------------------------------------------------------------
+// PAGE SHELL — throwaway from here down.
+// ---------------------------------------------------------------------------
+let state = INITIAL;
+
+const PRIORITIES = [["standard","Standard"],["preserve-highlights","Preserve highlights"],["keep-faces-sharp","Keep faces sharp"],["faster","Faster capture"]];
+const SCENARIO_STEPS = {
+  beach: [
+    ["observe:beach","Observe the beach scene"],
+    ["explanation","Open the explanation — read why a bracket"],
+    ["shutter","Press the shutter"],
+    ["next-frame","Frame 1 saves (hold steady)"],
+    ["next-frame","Frame 2 saves"],
+    ["next-frame","Frame 3 saves — done"],
+    ["workflow:raw","Switch after-capture workflow to RAW-editing first"],
+  ],
+  group: [
+    ["observe:group","Observe the group scene (people may move)"],
+    ["priority:keep-faces-sharp","Choose “Keep faces sharp”"],
+    ["explanation","Open the explanation — what changed and why"],
+    ["shutter","Press the shutter"],
+    ["next-frame","Frame saves — done immediately"],
+    ["workflow:photo","Switch workflow to finished-photo first"],
+  ],
+  interrupt: [
+    ["observe:beach","Observe the beach scene"],
+    ["shutter","Press the shutter"],
+    ["next-frame","Frame 1 saves"],
+    ["cond:movement-starts","Movement begins mid-sequence (the awkward case)"],
+    ["explanation","Open the explanation — what was kept and dropped"],
+  ],
+  handheld: [
+    ["observe:dimroom","Observe the dim room"],
+    ["explanation","Open the explanation — note the clamp + heuristic"],
+    ["priority:faster","Choose “Faster capture”"],
+    ["shutter","Press the shutter"],
+    ["next-frame","Frame saves — done"],
+    ["cond:light-drops","Light drops further — watch the plan revise"],
+  ],
+};
+const TAB_LABELS = { beach:"Scenic — bracket happy path", group:"Group — faces & movement", interrupt:"Interruption mid-bracket", handheld:"Dim room, then faster" };
+
+let activeTab = "beach", stepIndex = 0;
+
+function dispatch(action){ state = reduce(state, action); render(); }
+
+function render(){
+  renderState(); renderButtons(); renderScenario();
+}
+
+function renderState(){
+  const el = document.getElementById("state");
+  const scene = state.scene;
+  const parts = [];
+  parts.push(`<div class="changed">${state.lastChange}</div>`);
+  parts.push(`<div class="grid">`);
+  parts.push(panel("Phase", `<div class="kv"><span>Stage</span><b>${{idle:"Idle",plan:"Plan proposed",capturing:"Capturing",result:"Captured"}[state.phase]}</b></div>`));
+  parts.push(panel("Scene <span class='sim'>SIMULATED</span>", scene ? `
+    <div class="kv"><span>Conditions</span><b>${scene.label.split(" — ")[1]}</b></div>
+    <div class="kv"><span>Metered</span><b>${scene.meteredMs} ms · ISO ${scene.meteredIso}</b></div>
+    <div class="kv"><span>Support</span><b>${scene.support}</b></div>` : `<p class="note">No scene observed.</p>`));
+  if (state.plan) {
+    parts.push(panel("Capture plan", `
+      <div class="kv"><span>Strategy</span><b>${describePlan(state.plan)}</b></div>
+      ${state.plan.frames.map(f=>`<div class="frame"><span>${f.role}</span><b>${f.shutterMs} ms · ISO ${f.iso}</b></div>`).join("")}
+      <div class="kv"><span>Files</span><b>${state.plan.files} RAW · ${(state.plan.bytes/1e6).toFixed(1)} MB</b></div>
+      <div class="kv"><span>Priority</span><b>${state.plan.priorityAtPlan}</b></div>`));
+  }
+  if (state.phase === "capturing") {
+    parts.push(panel("During capture", `
+      <div class="kv"><span>Progress</span><b>${state.progress.framesDone} / ${state.progress.total} frames</b></div>
+      <p class="note">“Hold the framing steady” — remaining ${state.progress.total - state.progress.framesDone} frame(s).</p>`));
+  }
+  if (state.result) {
+    const r = state.result;
+    parts.push(panel("Result", `
+      <div class="kv"><span>Captured</span><b>${r.captured} of ${r.planned} frames${r.interrupted ? " — interrupted" : ""}</b></div>
+      ${r.frames.map(f=>`<div class="frame"><span>${f.role}</span><b>${f.shutterMs} ms · ISO ${f.iso}</b></div>`).join("")}`));
+  }
+  if (state.explanationOpen) {
+    parts.push(panel("Explanation " + (state.phase==="plan"?"(before)":"(after)"), explanationHtml()));
+  }
+  if (state.result) {
+    parts.push(panel("After-capture workflow", workflowHtml()));
+  }
+  parts.push(`</div>`);
+  el.innerHTML = parts.join("");
+}
+
+function explanationHtml(){
+  if (!state.plan) return `<p class="note">Nothing to explain yet.</p>`;
+  const intro = state.phase === "plan"
+    ? `<p><b>Why this plan.</b> ${state.plan.reasons.map(r=>`<li>${r}</li>`).join("")}</p>`
+    : `<p><b>What happened.</b> Requested settings are the recorded settings [measured]. ${state.result.interrupted ? "The sequence was interrupted: you keep the frames already saved; nothing merged is claimed from frames that never happened." : "All planned frames were saved."}</p>
+       <p class="note">Storage shown is originals only; rendering happens after, per your workflow choice.</p>`;
+  return `<ul class="tight">${state.plan.reasons.map(r=>`<li>${r}</li>`).join("")}</ul>
+    ${state.result && state.result.interrupted ? `<div class="warnbox">Interrupted captures are honest captures: the app would rather hand you ${state.result.captured} good RAW file(s) than silently pretend the full set was taken.</div>`:""}
+    <div class="evidence"><b>Camera profile</b> comes from what a first-run calibration would measure on your phone — here filled with S22 evidence [measured]: ${CAMERA_PROFILE.model}; longest shutter ${CAMERA_PROFILE.longShutterCeilingMs} ms (back paths); per-frame black levels can differ within one capture in dim light.</div>`;
+}
+
+function workflowHtml(){
+  if (state.workflow === "photo") {
+    return `<div class="kv"><span>Workflow</span><b>Finished photo first</b></div>
+      <p class="note">You get one rendered photo ready to share, plus every original RAW preserved untouched for later. Nothing is discarded.</p>
+      <div class="evidence"><b>Render note</b> [measured, qualitative]: bracket merges looked less grainy in the tested scene; a rendering step still needs real implementation and hasn't been measured on-phone.</div>`;
+  }
+  return `<div class="kv"><span>Workflow</span><b>RAW editing first</b></div>
+    <p class="note">Originals are the product: each RAW is labelled with its role (short = sky detail, middle = overall, long = shadows) so a later edit knows where to lift what.</p>
+    <div class="evidence"><b>Edit note</b> [measured]: where the middle frame clipped (~0.05% of pixels), the short frame kept unsaturated samples — highlight recovery material exists, though small in the tested scene.</div>`;
+}
+
+function panel(title, body){ return `<div class="panel"><h3>${title}</h3>${body}</div>`; }
+
+function renderButtons(){
+  const ob = document.getElementById("observeButtons");
+  ob.innerHTML = Object.values(SCENES).map(sc=>`<button onclick="act('observe','${sc.id}')">${sc.label.split(" — ")[0]}</button>`).join("");
+  const ch = document.getElementById("changeButtons");
+  ch.innerHTML = `<button onclick="act('cond','movement-starts')">Movement starts</button><button onclick="act('cond','light-drops')">Light drops</button>`;
+  const pr = document.getElementById("priorityButtons");
+  pr.innerHTML = PRIORITIES.map(([id,label])=>`<button onclick="act('priority','${id}')">${label}</button>`).join("");
+  const fl = document.getElementById("flowButtons");
+  fl.innerHTML = `<button class="primary" onclick="act('shutter')" ${state.phase!=="plan"?"disabled":""}>Press shutter</button>
+    <button class="primary" onclick="act('next')" ${state.phase!=="capturing"?"disabled":""}>Next frame saves</button>
+    <button onclick="act('explanation')" ${state.plan?"":"disabled"}>Explanation on/off</button>
+    <button onclick="act('workflow','photo')">Workflow: photo first</button>
+    <button onclick="act('workflow','raw')">Workflow: RAW first</button>
+    <button onclick="act('reset')">Reset</button>`;
+}
+
+function renderScenario(){
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = Object.keys(SCENARIO_STEPS).map(k=>`<button class="tab ${k===activeTab?"active":""}" onclick="startTab('${k}')">${TAB_LABELS[k]}</button>`).join("");
+  const body = document.getElementById("scenarioBody");
+  const steps = SCENARIO_STEPS[activeTab];
+  const intros = {
+    beach:"Still, supported, high range — the case for several exposures. Watch how the plan explains its cost honestly before you commit.",
+    group:"Faces in shade with movement — the case for one short exposure. Watch the priority override change the plan, not hide it.",
+    interrupt:"The awkward case: the scene changes while the camera is mid-sequence. Watch what is kept, dropped, and admitted.",
+    handheld:"Low light on a support, then two twists: a clamp appears in the plan, and “Faster” re-plans to one frame. Watch the revision when light drops further.",
+  };
+  body.innerHTML = `<p>${intros[activeTab]}</p>` + steps.map((s,i)=>{
+    const [actId,label] = s;
+    return `<div class="step ${i<stepIndex?"done":""}"><div class="n">${i<stepIndex?"✓":i+1}</div><div><button ${i===stepIndex?"":"disabled"} onclick="stepAct('${actId}')">${label}</button></div></div>`;
+  }).join("");
+}
+
+function startTab(tab){ activeTab = tab; stepIndex = 0; state = INITIAL; render(); }
+function stepAct(actId){
+  const steps = SCENARIO_STEPS[activeTab];
+  if (stepIndex >= steps.length) return;
+  const [kind, arg] = actId.split(":");
+  if (kind === "observe") dispatch({type:"observe", sceneId:arg});
+  else if (kind === "cond") dispatch({type:"conditions", change:arg});
+  else if (kind === "priority") dispatch({type:"priority", priority:arg});
+  else if (kind === "explanation") dispatch({type:"explanation"});
+  else if (kind === "shutter") dispatch({type:"shutter"});
+  else if (kind === "next") dispatch({type:"next-frame"});
+  else if (kind === "workflow") dispatch({type:"workflow", workflow:arg});
+  stepIndex += 1; render();
+}
+function act(kind, arg){
+  if (kind === "observe") dispatch({type:"observe", sceneId:arg});
+  else if (kind === "cond") dispatch({type:"conditions", change:arg});
+  else if (kind === "priority") dispatch({type:"priority", priority:arg});
+  else if (kind === "explanation") dispatch({type:"explanation"});
+  else if (kind === "shutter") dispatch({type:"shutter"});
+  else if (kind === "next") dispatch({type:"next-frame"});
+  else if (kind === "workflow") dispatch({type:"workflow", workflow:arg});
+  else if (kind === "reset") dispatch({type:"reset"});
+}
+render();
+</script>
+</body>
+</html>

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """THROWAWAY on-device evidence runner. Operates only dev.shutrwise.probe."""
 import argparse
-import hashlib
 import io
 import json
 from pathlib import Path
@@ -10,10 +9,10 @@ import sys
 import tarfile
 import time
 
-from pathlib import Path
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from adb_select import DeviceSelectionError, select_serial  # noqa: E402
+from device_lifecycle import DeviceRun  # noqa: E402
+from file_integrity import sha256_file  # noqa: E402
 
 PACKAGE = 'dev.shutrwise.probe'
 
@@ -27,7 +26,21 @@ def main():
     parser.add_argument('--mode', choices=['single', 'bracket', 'control'], default='single')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--skip-install', action='store_true')
+    parser.add_argument('--keep-awake', action='store_true')
+    parser.add_argument('--ownership-fd', type=int, help=argparse.SUPPRESS)
     args = parser.parse_args()
+    if args.output.exists():
+        parser.error('Output exists; choose a new evidence directory.')
+    try:
+        args.device = select_serial(args.adb, args.device)
+    except DeviceSelectionError as error:
+        parser.error(str(error))
+    with DeviceRun(args.adb, args.device, keep_awake=args.keep_awake,
+                   inherited_fd=args.ownership_fd, record=args.output/'cleanup.json') as owner:
+        return execute(args, parser, owner)
+
+
+def execute(args, parser, owner):
     if args.output.exists():
         parser.error('Output exists; choose a new evidence directory.')
     args.output.mkdir(parents=True)
@@ -37,12 +50,13 @@ def main():
         parser.error(str(error))
     adb = [str(args.adb), '-s', serial]
     apk_path = Path(__file__).parent / 'build/probe.apk'
-    apk_hash = hashlib.sha256(apk_path.read_bytes()).hexdigest() if apk_path.exists() else None
+    apk_hash = sha256_file(apk_path) if apk_path.exists() else None
     collection = {'source': PACKAGE, 'action': args.action, 'camera_id': args.camera_id if args.action == 'capture' else None, 'mode': args.mode if args.action == 'capture' else None, 'local_apk_sha256': apk_hash}
 
     def text(*cmd):
         return subprocess.run(adb + list(cmd), check=True, capture_output=True, text=True, timeout=30).stdout
 
+    owner.started(PACKAGE)
     if not args.skip_install:
         apk = Path(__file__).parent / 'build/probe.apk'
         print(text('install', '-r', str(apk)).strip())

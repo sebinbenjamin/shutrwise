@@ -75,3 +75,29 @@ def phase_shift(a, b):
             'peak': float(cc[peak]),
             'meaning': 'Shift to align second image with middle, phase-only log-green '
                        'diagnostic; not registration applied or proof of local alignment.'}
+
+
+def normalize_raw(mosaic, colors, black_levels, white):
+    black = np.asarray(black_levels, dtype=np.float32)[colors]
+    return (mosaic.astype(np.float32) - black) / (white - black)
+
+
+def merge_bracket(samples, relative):
+    radiance = [a / float(e) for a, e in zip(samples, relative)]
+    weights = [np.where(np.isfinite(a), float(e) * np.clip((.98-a)/(.98-.80), 0, 1), 0)
+               for a, e in zip(samples[:3], relative[:3])]
+    sumw = sum(weights)
+    fallback = sumw <= 0
+    numerator = sum(w * np.nan_to_num(a, nan=0) for w, a in zip(weights, radiance))
+    values = np.where(np.isfinite(radiance[0]), radiance[0], radiance[1])
+    merged = np.divide(numerator, sumw, out=values.copy(), where=~fallback)
+    assert np.isfinite(merged).all()
+    return radiance, weights, sumw, fallback, merged
+
+
+def safe_ratio(numerator, denominator):
+    numerator, denominator = float(numerator), float(denominator)
+    if denominator == 0 or not np.isfinite([numerator, denominator]).all():
+        return None
+    value = numerator / denominator
+    return value if np.isfinite(value) else None

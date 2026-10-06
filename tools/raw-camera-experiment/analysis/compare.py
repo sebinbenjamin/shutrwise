@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """THROWAWAY: fixed-exposure RAW bracket experiment, not a production HDR engine."""
 import argparse
-import hashlib
 import json
 import platform
 import time
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from file_integrity import sha256_file  # noqa: E402
 
 import numpy as np
 import PIL
@@ -13,7 +15,7 @@ from PIL import Image, ImageDraw
 import rawpy
 import tifffile
 
-from raw_common import CONSISTENCY_INDICES, ROIS, roi_slices
+from raw_common import safe_ratio, normalize_raw, merge_bracket, CONSISTENCY_INDICES, ROIS, roi_slices
 
 LIMITS = [
     "S22 only; no Samsung baseline or S25 measurements.",
@@ -27,7 +29,7 @@ LIMITS = [
 
 
 def sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return sha256_file(path)
 
 
 def rgb_cells(mosaic, pattern):
@@ -86,9 +88,8 @@ def run_sequence(source, output):
             mosaic=r.raw_image_visible.copy()
             pattern=r.raw_pattern.copy()
             colors=r.raw_colors_visible.copy()
-            black=np.array(r.black_level_per_channel,dtype=np.float32)[colors]
             white=float(r.white_level)
-            normalized=(mosaic.astype(np.float32)-black)/(white-black)
+            normalized=normalize_raw(mosaic,colors,r.black_level_per_channel,white)
             x.append(normalized);clipped.append(mosaic>=white);near.append(normalized>=.98)
             raw_metadata.append({"dimensions_yx":list(mosaic.shape),"white_level":white,
                                  "black_per_channel":r.black_level_per_channel,
@@ -108,19 +109,11 @@ def run_sequence(source, output):
     isos=np.array([r["android.sensor.sensitivity"] for r in results],dtype=float)
     assert max(isos[:3])==min(isos[:3]), "This prototype assumes fixed actual ISO within the three-frame bracket"
     relative=times*isos/(times[1]*isos[1])
-    radiance=[a/float(e) for a,e in zip(x,relative)]
+    radiance, weights, sumw, fallback, merged = merge_bracket(x,relative)
     original_radiance=[a.copy() for a in radiance]
     wb=results[1]["android.colorCorrection.gains"]
     gains=np.array([wb["red"],(wb["green_even"]+wb["green_odd"])/2,wb["blue"]],dtype=np.float32)
     # Exposure-weighted average; rolloff protects near-white samples before RGB conversion.
-    weights=[np.where(np.isfinite(a),float(e)*np.clip((.98-a)/(.98-.80),0,1),0)
-             for a,e in zip(x[:3],relative[:3])]
-    sumw=sum(weights)
-    fallback=sumw<=0
-    numerator=sum(w*np.nan_to_num(a,nan=0) for w,a in zip(weights,radiance))
-    fallback_values=np.where(np.isfinite(radiance[0]),radiance[0],radiance[1])
-    merged=np.divide(numerator,sumw,out=fallback_values.copy(),where=~fallback)
-    assert np.isfinite(merged).all()
     fractions=[np.divide(w,sumw,out=np.zeros_like(w),where=~fallback) for w in weights]
     baseline=radiance[1]
     baseline_rgb=rgb_cells(baseline,pattern)*gains
@@ -171,7 +164,7 @@ def run_sequence(source, output):
         roi_metrics[name]={"normalized_rectangle_xyxy":frac,"display_gain":16 if name=="dark_lower_left" else 2,
                            "single_green_radiance":stats(a[...,1]),"merge_green_radiance":stats(b[...,1]),
                            "long_single_green_radiance":stats(c[...,1]),
-                           "long_single_to_middle_green_median_ratio":float(np.median(c[...,1])/np.median(a[...,1])),
+                           "long_single_to_middle_green_median_ratio":safe_ratio(np.median(c[...,1]),np.median(a[...,1])),
                            "sensor_rgb_absolute_difference_median":float(np.median(abs(a-b))),
                            "middle_raw_clipped_fraction":float(clipped[1][raw_sl].mean()),
                            "shortest_raw_clipped_fraction":float(clipped[0][raw_sl].mean()),

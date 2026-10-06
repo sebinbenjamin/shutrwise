@@ -119,3 +119,12 @@ The reusable [batch script](../tools/raw-camera-experiment/batch.py) automates f
 The script uses the locally built probe, verifies its installed APK hash, and refuses existing evidence paths. The copied capture source is unchanged from the longer-single prototype commit. Each condition's capture/analysis status and file manifest distinguish successes from failures. This covers directly listed API paths; physical telephoto IDs that fail direct opening require separate logical-camera routing work and must not be counted as photographed.
 
 Both conditions completed on 2026-10-06 with every listed camera verified. The [combined report](research/all-camera-lighting-20261006.md) links the evidence and records the device behaviors it exposed, including the per-path shutter ceilings and the dark-condition black-level calibration split.
+
+## Capture cleanup and local checks
+
+The batch and standalone probe tools now enforce cooperative phone ownership and stop/sleep at the outer run boundary, including failure and interruption. Batch children do not sleep between quartets. `--keep-awake` is an explicit option; analysis is offline. The same lease is used by `tools/device_session.py` for owned agent-device verification sessions. Use the exact T3 launcher/config/session and finish capture before opening a viewing session. Cleanup results are recorded in the run's `cleanup.json`; inspect failures rather than assuming the display slept.
+
+See [local check setup](development-checks.md) for pinned dependencies, `python3 tools/check.py` and the staged-source pre-commit gate. See [evidence handling](../evidence/README.md) for Git indexes/prototype source, offline status, generated report blocks and verification of images restored from regular VM backups. No separate RAW archive is configured.
+
+
+On 2026-10-07, a capability-only standalone run verified the cleanup path on the connected S22: the probe process stopped and display diagnostics reported OFF. No photos were taken. See [the retrospective validation record](research/session-retro-20261007.md#implementation-and-validation--2026-10-07). Local tests also cover failures and interruption; they do not substitute for checking the outcome of a future hardware run.

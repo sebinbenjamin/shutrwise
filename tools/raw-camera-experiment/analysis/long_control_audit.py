@@ -2,6 +2,9 @@
 """Independent four-source control audit; no photon/noise calibration claims."""
 import argparse,hashlib,json,platform
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from file_integrity import sha256_file  # noqa: E402
 import numpy as np
 import rawpy
 import tifffile
@@ -16,7 +19,7 @@ def main():
    path=d/f'frame-{i}.dng';doc=json.loads((d/f'frame-{i}-result.json').read_text());r=doc['result'];plan=doc['plan']
    with rawpy.imread(str(path)) as raw:
     x=raw.raw_image_visible.copy();c=raw.raw_colors_visible.copy();b=np.asarray(raw.black_level_per_channel,dtype=np.float32)[c];s=x.astype(np.float32)-b;n=s/(raw.white_level-b)
-    info={'frame':i,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'bytes':path.stat().st_size,'shape':list(x.shape),'cfa':raw.raw_pattern.tolist(),'black_per_channel':raw.black_level_per_channel,'white':raw.white_level,'actual_exposure_ns':r['android.sensor.exposureTime'],'actual_iso':r['android.sensor.sensitivity'],'requested_exposure_ns':plan['requested_exposure_time_ns'],'requested_iso':plan['requested_iso'],'dynamic_black':r.get('android.sensor.dynamicBlackLevel'),'dynamic_white':r.get('android.sensor.dynamicWhiteLevel'),'focus_diopters':r.get('android.lens.focusDistance'),'awb_lock':r.get('android.control.awbLock'),'wb_gains':r.get('android.colorCorrection.gains'),'ois':r.get('android.lens.opticalStabilizationMode'),'timestamp_image':doc['sensor_timestamp_ns'],'timestamp_result':r['android.sensor.timestamp'],'timestamp_start':doc['capture_started_timestamp_ns'],'frame_number':doc['frame_number'],'white_clip_pct':float(np.mean(x>=raw.white_level)*100),'per_cfa_signal_codes':{str(k):quartile_stats(s[c==k]) for k in range(4)}}
+    info={'frame':i,'sha256':sha256_file(path),'bytes':path.stat().st_size,'shape':list(x.shape),'cfa':raw.raw_pattern.tolist(),'black_per_channel':raw.black_level_per_channel,'white':raw.white_level,'actual_exposure_ns':r['android.sensor.exposureTime'],'actual_iso':r['android.sensor.sensitivity'],'requested_exposure_ns':plan['requested_exposure_time_ns'],'requested_iso':plan['requested_iso'],'dynamic_black':r.get('android.sensor.dynamicBlackLevel'),'dynamic_white':r.get('android.sensor.dynamicWhiteLevel'),'focus_diopters':r.get('android.lens.focusDistance'),'awb_lock':r.get('android.control.awbLock'),'wb_gains':r.get('android.colorCorrection.gains'),'ois':r.get('android.lens.opticalStabilizationMode'),'timestamp_image':doc['sensor_timestamp_ns'],'timestamp_result':r['android.sensor.timestamp'],'timestamp_start':doc['capture_started_timestamp_ns'],'frame_number':doc['frame_number'],'white_clip_pct':float(np.mean(x>=raw.white_level)*100),'per_cfa_signal_codes':{str(k):quartile_stats(s[c==k]) for k in range(4)}}
     green.append(bayer_green(s, raw.raw_pattern))
     arrays.append(x);signal.append(s);norm.append(n);colors.append(c)
    with tifffile.TiffFile(path) as tf:
