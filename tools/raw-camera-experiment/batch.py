@@ -122,9 +122,14 @@ def main():
         save(folder/'capture-status.json',{'cameras':records,'uncompleted_listed_camera_ids':errors})
     else:
         status=json.loads((folder/'capture-status.json').read_text())
+        status_path=folder/'analysis-status.json'
+        existing={}
+        if status_path.exists():
+            existing={r['camera_id']:r for r in json.loads(status_path.read_text())['cameras']}
         records=[]
         for c in status['cameras']:
             if c['status']!='captured':continue
+            if args.camera_ids and c['camera_id'] not in args.camera_ids:continue
             base=folder/('camera-'+c['camera_id'])
             if (base/'comparison').exists():
                 parser.error(f'Analysis output already exists for {base.name}. Preserve it and use a fresh capture root.')
@@ -137,7 +142,9 @@ def main():
             except (RuntimeError,subprocess.TimeoutExpired) as error:
                 record['status']='analysis_failed';record['error']=str(error);errors.append(c['camera_id'])
                 print(base.name,record['error'],flush=True)
-            save(folder/'analysis-status.json',{'cameras':records})
+            save(status_path,{'cameras':sorted(records+[r for k,r in existing.items()
+                        if k not in {x['camera_id'] for x in records}],
+                        key=lambda r:r['camera_id'])})
     files=[{'path':str(p.relative_to(folder)),'bytes':p.stat().st_size,'sha256':sha256_file(p)} for p in sorted(folder.rglob('*')) if p.is_file() and p.name!='manifest.json']
     save(folder/'manifest.json',{'files':files})
     print(args.stage,'complete for',args.lighting,'; failures:',errors,flush=True)

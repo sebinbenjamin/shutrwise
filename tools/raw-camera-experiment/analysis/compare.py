@@ -96,7 +96,14 @@ def run_sequence(source, output):
         refs.append({"dng":str(path),"sha256":sha(path),"bytes":path.stat().st_size,
                      "result_sha256":sha(result_path)})
     decoded_seconds=time.perf_counter()-begin
-    assert all(m==raw_metadata[1] for m in raw_metadata)
+    # Structural RAW layout must match across the quartet; per-frame black-level
+    # calibration may legitimately differ (measured: dark-condition front and
+    # ultrawide singles carry black 64 while their bracket frames carry 65).
+    # Each frame is normalized by its own black level, so the math stays per-frame.
+    structural=[{k:m[k] for k in ("dimensions_yx","white_level","pattern","color_description")} for m in raw_metadata]
+    assert all(m==structural[1] for m in structural), \
+        "Quartet must share dimensions, white level, CFA pattern and color description"
+    uniform_black=all(m["black_per_channel"]==raw_metadata[0]["black_per_channel"] for m in raw_metadata)
     times=np.array([r["android.sensor.exposureTime"] for r in results],dtype=float)
     isos=np.array([r["android.sensor.sensitivity"] for r in results],dtype=float)
     assert max(isos[:3])==min(isos[:3]), "This prototype assumes fixed actual ISO within the three-frame bracket"
@@ -171,6 +178,8 @@ def run_sequence(source, output):
                            "mean_merge_weight_fractions": [float(w[raw_sl].mean()) for w in fractions]}
     elapsed=time.perf_counter()-begin
     metrics={"run":source.name,"inputs":refs,"raw_metadata":raw_metadata[1],
+             "quartet_black_level_per_frame":[m["black_per_channel"] for m in raw_metadata],
+             "uniform_black_level_across_quartet":uniform_black,
              "actual_exposure_ns":times.astype(int).tolist(),"actual_iso":isos.astype(int).tolist(),
              "relative_exposure":relative.tolist(),"summed_bracket_integration_ms":float(sum(times[:3])/1e6),
              "quartet_integration_ms":float(sum(times)/1e6),"long_single_integration_ms":float(times[3]/1e6),
